@@ -124,7 +124,7 @@ export function StudentSidebar({
                   className={clsx(
                     'flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all',
                     isActive
-                      ? 'bg-gold-500 text-navy-950 shadow-md shadow-gold-500/20 font-black'
+                      ? 'bg-gradient-to-r from-gold-300 via-gold-500 to-gold-600 text-navy-950 font-black shadow-md shadow-gold-500/25 border border-gold-400/40'
                       : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-800'
                   )}
                 >

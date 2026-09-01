@@ -123,10 +123,10 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
+                  className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
                     isActive
-                      ? "text-gold-600 dark:text-gold-400 bg-gold-500/10 dark:bg-navy-850 border border-gold-500/30 shadow-sm"
-                      : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-navy-900"
+                      ? "text-navy-950 bg-gradient-to-r from-gold-300 via-gold-500 to-gold-600 shadow-md shadow-gold-500/20 font-black"
+                      : "text-slate-700 dark:text-slate-300 hover:text-gold-600 dark:hover:text-gold-400 hover:bg-slate-100 dark:hover:bg-navy-900"
                   }`}
                 >
                   {link.label}

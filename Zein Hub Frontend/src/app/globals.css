@@ -10,6 +10,10 @@
   --foreground: #111827;
   --font-cairo: 'Cairo', system-ui, -apple-system, sans-serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --gold-primary: #FABF30;
+  --gold-highlight: #FFE658;
+  --gold-amber: #D0880B;
+  --gold-shadow: #BC7602;
 }
 
 /* Official Brand Dark Mode Tokens (#0F1D4A Primary Blue) */
@@ -58,7 +62,7 @@ html[lang="en"] body {
   font-family: var(--font-sans);
 }
 
-/* Custom scrollbar with official #0F1D4A & #F0D070 */
+/* Custom scrollbar with official #0F1D4A & logo gold #FABF30 */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -76,14 +80,46 @@ html[lang="en"] body {
   background: #C8D1E3;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #F0D070;
+  background: #FABF30;
 }
 
 /* Subtle broadcast grid overlay for hero & media preview */
 .media-grid-pattern {
-  background-image: radial-gradient(rgba(240, 208, 112, 0.12) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(250, 191, 48, 0.14) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 .dark .media-grid-pattern {
-  background-image: radial-gradient(rgba(240, 208, 112, 0.15) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(250, 191, 48, 0.18) 1px, transparent 1px);
+}
+
+/* 🌟 Luxury 3D Metallic Gold Button (Exact Logo Gradient) */
+.btn-gold {
+  background: linear-gradient(135deg, #FFE658 0%, #FABF30 35%, #E5A823 70%, #D0880B 100%);
+  color: #091230;
+  font-weight: 800;
+  box-shadow: 0 4px 18px -3px rgba(250, 191, 48, 0.45);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-gold:hover {
+  background: linear-gradient(135deg, #FFF0A3 0%, #FEDB51 35%, #FABF30 70%, #E5A823 100%);
+  box-shadow: 0 6px 24px -3px rgba(250, 191, 48, 0.60);
+  transform: translateY(-1px);
+}
+.btn-gold:active {
+  transform: translateY(0);
+}
+
+/* ✨ Active Link & Tab Styling */
+.nav-link-active {
+  background: linear-gradient(135deg, #FFE658 0%, #FABF30 45%, #E5A823 100%);
+  color: #091230 !important;
+  font-weight: 800;
+  box-shadow: 0 4px 14px -2px rgba(250, 191, 48, 0.35);
+}
+
+/* 🏆 Golden Text Gradient for Headings & Accents */
+.text-gold-gradient {
+  background: linear-gradient(180deg, #FFE658 0%, #FABF30 45%, #BC7602 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

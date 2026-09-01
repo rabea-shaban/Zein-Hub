@@ -12,30 +12,32 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        // Official Brand Palette — Primary Gold #F0D070
+        // 🌟 Official Zein Hub 3D Metallic Gold Palette (Extracted from Logo)
         gold: {
-          50: "#FEFDF8",
-          100: "#FDF9EE",
-          200: "#FAF0D6",
-          300: "#F7E5B5",
-          400: "#F4DB93",
-          500: "#F0D070", // Official Primary Gold
-          600: "#D6B552",
-          700: "#B29237",
-          800: "#8B7026",
-          900: "#6E561C",
+          50: "#FFFDF0",
+          100: "#FFF9D6",
+          200: "#FFF0A3",
+          300: "#FFE658", // Crystal Highlight Gold
+          400: "#FEDB51", // Radiant Gold Glow
+          500: "#FABF30", // Primary Official Metallic Gold (#FABF30)
+          600: "#E5A823", // Deep Rich Gold
+          700: "#D0880B", // Warm Amber Gold
+          800: "#BC7602", // Deep Bronze Gold Shadow
+          900: "#9F5B00", // Dark Accent Shadow
+          950: "#612F00", // Extra Deep Shade
         },
         brand: {
-          50: "#FEFDF8",
-          100: "#FDF9EE",
-          200: "#FAF0D6",
-          300: "#F7E5B5",
-          400: "#F4DB93",
-          500: "#F0D070", // Official Primary Accent Gold
-          600: "#D6B552",
-          700: "#B29237",
-          800: "#8B7026",
-          900: "#6E561C",
+          50: "#FFFDF0",
+          100: "#FFF9D6",
+          200: "#FFF0A3",
+          300: "#FFE658",
+          400: "#FEDB51",
+          500: "#FABF30",
+          600: "#E5A823",
+          700: "#D0880B",
+          800: "#BC7602",
+          900: "#9F5B00",
+          950: "#612F00",
         },
         // Official Brand Palette — Primary Blue #0F1D4A
         navy: {
@@ -66,7 +68,8 @@ const config: Config = {
         heading: "1.35",
       },
       boxShadow: {
-        'gold-glow': '0 0 25px -5px rgba(240, 208, 112, 0.40)',
+        'gold-glow': '0 0 25px -5px rgba(250, 191, 48, 0.45)',
+        'gold-card': '0 8px 30px -8px rgba(250, 191, 48, 0.25)',
         'navy-card': '0 10px 30px -10px rgba(15, 29, 74, 0.25)',
       }
     },
