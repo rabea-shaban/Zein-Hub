@@ -1,0 +1,1041 @@
+{
+	"info": {
+		"_postman_id": "zein-hub-backend-api-master-v2",
+		"name": "Zein Hub API - Media LMS (Master Collection)",
+		"description": "Master Postman Collection for Zein Hub Media LMS Backend API covering all 16 modules, full CRUD operations, httpOnly Cookies, Instructor Profile & Password updates, and Admin Analytics.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01 Authentication",
+			"description": "Registration, login, httpOnly cookie session refresh, and logout.",
+			"item": [
+				{
+					"name": "Register Student",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullName\": \"Ahmed Samy\",\n    \"email\": \"ahmed.samy@example.com\",\n    \"password\": \"StudentPass123!\",\n    \"phone\": \"+201012345678\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Super Admin (Sets httpOnly Cookies)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@zeinhub.com\",\n    \"password\": \"Admin@ZeinHub2026!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Instructor (Sets httpOnly Cookies)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"instructor.voice10@zeinhub.com\",\n    \"password\": \"InstructorPass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Student (Sets httpOnly Cookies)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"student.hardened1@zeinhub.com\",\n    \"password\": \"StudentPass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Access Token (Via Refresh Cookie)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh-token",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "refresh-token"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Authenticated Profile (Via Cookie)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "profile"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout (Clears Cookies)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "logout"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "02 Users & Roles",
+			"description": "Instructor profile self-update, avatar, password change, dashboard, and admin instructor management.",
+			"item": [
+				{
+					"name": "Create Instructor (Super Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullName\": \"Dr. Tarek Voice\",\n    \"email\": \"tarek.voice@zeinhub.com\",\n    \"password\": \"InstructorPass123!\",\n    \"phone\": \"+201099998888\",\n    \"specializations\": [\"Voice Over\", \"Acoustics\", \"Smart Podcasting\"],\n    \"bio\": \"Over 15 years in radio broadcasting and professional voice coaching.\",\n    \"assignedPrograms\": []\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/instructors",
+							"host": ["{{baseUrl}}"],
+							"path": ["instructors"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Instructor Profile (Instructor)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/instructors/me/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["instructors", "me", "profile"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update My Profile, Photo, Password & Bio (Instructor)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullName\": \"Dr. Tarek Updated Voice Coach\",\n    \"phone\": \"+201099998888\",\n    \"avatarUrl\": \"https://cdn.zeinhub.com/avatars/dr_tarek.jpg\",\n    \"photoUrl\": \"https://cdn.zeinhub.com/avatars/dr_tarek.jpg\",\n    \"bio\": \"خبير إذاعي ومدرب صوتي معتمد لدى كبرى المنصات الرقمية وقنوات الإعلام.\",\n    \"specializations\": [\"Voice Over\", \"Vocal Acoustics\", \"Smart Podcasting\"],\n    \"experienceYears\": 16,\n    \"reelUrl\": \"https://cdn.zeinhub.com/reels/dr_tarek_showreel.mp4\",\n    \"newPassword\": \"NewInstructorPass123!\",\n    \"socialLinks\": {\n        \"linkedin\": \"https://linkedin.com/in/drtarekvoice\",\n        \"youtube\": \"https://youtube.com/@drtarekvoice\",\n        \"portfolio\": \"https://drtarekvoice.com\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/instructors/me/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["instructors", "me", "profile"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Instructor Dashboard (Instructor)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/instructors/me/dashboard",
+							"host": ["{{baseUrl}}"],
+							"path": ["instructors", "me", "dashboard"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Instructor Assigned Programs (Instructor)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/instructors/me/programs",
+							"host": ["{{baseUrl}}"],
+							"path": ["instructors", "me", "programs"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Instructors (Super Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/instructors/admin/all?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["instructors", "admin", "all"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "03 Programs",
+			"description": "Training programs catalog, status changes, featured toggle, and instructor assignment.",
+			"item": [
+				{
+					"name": "Get All Programs (Public)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/programs?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["programs"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Featured Programs (Public)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/programs/featured",
+							"host": ["{{baseUrl}}"],
+							"path": ["programs", "featured"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Program by Slug or ID (Public)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/programs/voice-over-digital-vocalise",
+							"host": ["{{baseUrl}}"],
+							"path": ["programs", "voice-over-digital-vocalise"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Program (Super Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"titleAr\": \"دبلوم هندسة الصوت المتقدمة والمكساج\",\n    \"titleEn\": \"Advanced Audio Engineering & Mixing Masterclass\",\n    \"slug\": \"advanced-audio-engineering-mixing\",\n    \"trackId\": \"{{trackId}}\",\n    \"descriptionAr\": \"تدريب عملي على برامج Pro Tools واستوديوهات الصوت الاحترافية.\",\n    \"descriptionEn\": \"Hands-on masterclass in studio acoustics and mastering.\",\n    \"durationHours\": 40,\n    \"durationWeeks\": 8,\n    \"level\": \"intermediate\",\n    \"status\": \"open\",\n    \"price\": 4500\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/programs",
+							"host": ["{{baseUrl}}"],
+							"path": ["programs"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Program Status (Super Admin)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"open\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/programs/{{programId}}/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["programs", "{{programId}}", "status"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Featured Program (Super Admin)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/programs/{{programId}}/featured",
+							"host": ["{{baseUrl}}"],
+							"path": ["programs", "{{programId}}", "featured"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "04 Tracks / Categories",
+			"description": "Specialization tracks management.",
+			"item": [
+				{
+					"name": "Get All Tracks (Public)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tracks",
+							"host": ["{{baseUrl}}"],
+							"path": ["tracks"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Track by ID or Slug (Public)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tracks/media-presentation",
+							"host": ["{{baseUrl}}"],
+							"path": ["tracks", "media-presentation"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Track (Super Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nameAr\": \"مسار الإنتاج الصوتي\",\n    \"nameEn\": \"Audio Production Track\",\n    \"slug\": \"audio-production-track\",\n    \"descriptionAr\": \"تخصصات هندسة الصوت والمكساج والدوبلاج.\",\n    \"descriptionEn\": \"Audio engineering, mixing and dubbing.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tracks",
+							"host": ["{{baseUrl}}"],
+							"path": ["tracks"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "05 Modules",
+			"description": "Course curriculum modules structuring programs.",
+			"item": [
+				{
+					"name": "Get Program Modules (Public / Context-Aware)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/programs/{{programId}}/modules",
+							"host": ["{{baseUrl}}"],
+							"path": ["programs", "{{programId}}", "modules"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Module (Admin / Assigned Instructor)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"الوحدة الأولى: أساسيات الصوت واستخدام الميكروفونات الاحترافية\",\n    \"description\": \"التعرف على خصائص الصوت والأنماط القطبية للميكروفونات.\",\n    \"order\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/programs/{{programId}}/modules",
+							"host": ["{{baseUrl}}"],
+							"path": ["programs", "{{programId}}", "modules"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "06 Lessons & Content",
+			"description": "Lessons, video/audio resources, free preview, and lesson completion.",
+			"item": [
+				{
+					"name": "Get Module Lessons",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/course-modules/{{moduleId}}/lessons",
+							"host": ["{{baseUrl}}"],
+							"path": ["course-modules", "{{moduleId}}", "lessons"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Lesson Details (Protected Paid Media)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/lessons/{{lessonId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["lessons", "{{lessonId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Lesson (Admin / Instructor)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"الدرس الأول: الإحماء الصوتي والتحكم بطبقات الصوت\",\n    \"contentType\": \"video\",\n    \"contentUrl\": \"https://cdn.zeinhub.com/secure/lesson-1.mp4\",\n    \"durationMinutes\": 30,\n    \"isFreePreview\": true,\n    \"isPublished\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/course-modules/{{moduleId}}/lessons",
+							"host": ["{{baseUrl}}"],
+							"path": ["course-modules", "{{moduleId}}", "lessons"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Lesson (Enrolled Student)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/lessons/{{lessonId}}/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["lessons", "{{lessonId}}", "complete"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "07 Enrollments",
+			"description": "Student applications, admission reviews, and enrollment records.",
+			"item": [
+				{
+					"name": "Submit Application (Student)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"programId\": \"{{programId}}\",\n    \"motivation\": \"أتطلع لتطوير مهاراتي الصوتية والعمل في مجال الدوبلاج والتعليق الصوتي.\",\n    \"experienceLevel\": \"beginner\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/applications",
+							"host": ["{{baseUrl}}"],
+							"path": ["applications"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Applications (Student)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/applications/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["applications", "me"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Review Application (Super Admin)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"accepted\",\n    \"reviewNotes\": \"تم قبول طلب الالتحاق بالدفعة الحالية. أهلاً بك في المنصة!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/applications/{{applicationId}}/review",
+							"host": ["{{baseUrl}}"],
+							"path": ["applications", "{{applicationId}}", "review"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Enrollments (Student)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/enrollments/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["enrollments", "me"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "08 Quizzes & Questions",
+			"description": "Quizzes, question bank, automated grading, and anti-cheat answer masking.",
+			"item": [
+				{
+					"name": "Get Quiz Details (Masked for Students)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/quizzes/{{quizId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["quizzes", "{{quizId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Question to Quiz (Admin / Instructor)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"text\": \"ما هو زمن الارتداد الصوتي (Reverberation Time) المثالي لغرف تسجيل التعليق الصوتي؟\",\n    \"type\": \"multiple-choice\",\n    \"options\": [\n        { \"text\": \"0.2 إلى 0.4 ثانية\", \"isCorrect\": true },\n        { \"text\": \"1.5 إلى 2.0 ثانية\", \"isCorrect\": false },\n        { \"text\": \"3.0 إلى 4.0 ثوانٍ\", \"isCorrect\": false }\n    ],\n    \"points\": 10\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/quizzes/{{quizId}}/questions",
+							"host": ["{{baseUrl}}"],
+							"path": ["quizzes", "{{quizId}}", "questions"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Quiz Attempt (Student)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"answers\": [\n        {\n            \"questionId\": \"{{questionId}}\",\n            \"selectedOptionIndex\": 0\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/quizzes/{{quizId}}/submit",
+							"host": ["{{baseUrl}}"],
+							"path": ["quizzes", "{{quizId}}", "submit"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "09 Assignments & Submissions",
+			"description": "Practical audio/video assignments, file submission, instructor grading, and feedback.",
+			"item": [
+				{
+					"name": "Get Assignment Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/assignments/{{assignmentId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["assignments", "{{assignmentId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Practical Assignment (Student)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mediaUrl\": \"https://cdn.zeinhub.com/submissions/student_voiceover_take1.mp3\",\n    \"textNotes\": \"تم تسجيل النص الإعلاني باستخدام ميكروفون Shure SM7B مع المعالجة الأولية.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/assignments/{{assignmentId}}/submit",
+							"host": ["{{baseUrl}}"],
+							"path": ["assignments", "{{assignmentId}}", "submit"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Grade Assignment Submission (Instructor / Admin)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"grade\": 95,\n    \"feedback\": \"أداء صوتي متميز جداً، مخارج الحروف واضحة والتحكم في التنفس متقن.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/submissions/{{submissionId}}/grade",
+							"host": ["{{baseUrl}}"],
+							"path": ["submissions", "{{submissionId}}", "grade"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "10 Progress",
+			"description": "Curriculum completion percentages, academic grade calculations, and recalculations.",
+			"item": [
+				{
+					"name": "Get My Progress for All Programs (Student)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/progress/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["progress", "me"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Progress for Specific Program (Student)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/progress/me/{{programId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["progress", "me", "{{programId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recalculate Program Progress (Admin / Instructor)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/progress/program/{{programId}}/recalculate",
+							"host": ["{{baseUrl}}"],
+							"path": ["progress", "program", "{{programId}}", "recalculate"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "11 Certificates",
+			"description": "Graduation certification and tamper-proof public certificate verification.",
+			"item": [
+				{
+					"name": "Get My Certificates (Student)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/certificates/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["certificates", "me"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Certificate Publicly (No Auth Required)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/certificates/verify/ZH-VOI-2026-FC1505",
+							"host": ["{{baseUrl}}"],
+							"path": ["certificates", "verify", "ZH-VOI-2026-FC1505"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "12 Live Sessions",
+			"description": "Interactive sessions (Zoom, Google Meet, Teams) and meeting link security.",
+			"item": [
+				{
+					"name": "Get Program Live Sessions (Enrolled / Scoped)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/programs/{{programId}}/sessions",
+							"host": ["{{baseUrl}}"],
+							"path": ["programs", "{{programId}}", "sessions"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Schedule Live Session (Admin / Assigned Instructor)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"جلسة استوديو تفاعلية: هندسة الفوكاليز ومخارج الحروف\",\n    \"provider\": \"zoom\",\n    \"meetingUrl\": \"https://zoom.us/j/9876543210\",\n    \"meetingPassword\": \"ZeinLive2026\",\n    \"startTime\": \"2026-09-15T18:00:00.000Z\",\n    \"durationMinutes\": 90\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/programs/{{programId}}/sessions",
+							"host": ["{{baseUrl}}"],
+							"path": ["programs", "{{programId}}", "sessions"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Session Status (Live / Completed / Cancelled)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"completed\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/sessions/{{sessionId}}/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["sessions", "{{sessionId}}", "status"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "13 Attendance",
+			"description": "Student attendance logging and attendance rate calculations.",
+			"item": [
+				{
+					"name": "Mark Student Attendance (Admin / Instructor)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"studentId\": \"{{studentId}}\",\n    \"status\": \"present\",\n    \"attendanceMinutes\": 90,\n    \"notes\": \"تفاعل ممتاز ومشاركة فعالة في التطبيقات العملية.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/sessions/{{sessionId}}/attendance",
+							"host": ["{{baseUrl}}"],
+							"path": ["sessions", "{{sessionId}}", "attendance"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Attendance Record (Student)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/attendance/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["attendance", "me"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Program Attendance Summary (Admin / Instructor)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/attendance/program/{{programId}}/summary",
+							"host": ["{{baseUrl}}"],
+							"path": ["attendance", "program", "{{programId}}", "summary"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "14 Reviews & Testimonials",
+			"description": "Student ratings (1-5 stars), moderation queue (Pending -> Approved -> Rejected), and public feedback.",
+			"item": [
+				{
+					"name": "Submit Program Review (Enrolled Student)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rating\": 5,\n    \"comment\": \"دبلوم متميز جداً وتطبيقات عملية ممتعة ومفيدة في استوديوهات الصوت الاحترافية.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/programs/{{programId}}/reviews",
+							"host": ["{{baseUrl}}"],
+							"path": ["programs", "{{programId}}", "reviews"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Program Reviews & Star Breakdown (Public)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/programs/{{programId}}/reviews",
+							"host": ["{{baseUrl}}"],
+							"path": ["programs", "{{programId}}", "reviews"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Approved Testimonials (Public)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/approved?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["reviews", "approved"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Moderate Review (Super Admin)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"approved\",\n    \"isFeatured\": true,\n    \"moderationNotes\": \"تقييم حقيقي ومفصل من خريج معتمد.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews/{{reviewId}}/moderate",
+							"host": ["{{baseUrl}}"],
+							"path": ["reviews", "{{reviewId}}", "moderate"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "15 Admin Dashboard & Analytics",
+			"description": "MongoDB Aggregation Pipeline driven KPIs, progress tiers, assessments, and operational reports.",
+			"item": [
+				{
+					"name": "Get Dashboard Overview KPIs (Admin / Instructor)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/dashboard/overview",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "dashboard", "overview"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Enrollment Analytics (Admin / Instructor)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/analytics/enrollments",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "analytics", "enrollments"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Progress Analytics & Tiers (Admin / Instructor)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/analytics/progress",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "analytics", "progress"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detailed Program Performance Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/reports/programs/{{programId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "reports", "programs", "{{programId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Students & Enrollments Operational Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/reports/students?page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "reports", "students"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "16 Health & System",
+			"description": "Server status and database connectivity health checks.",
+			"item": [
+				{
+					"name": "Root Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/health",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["health"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "API v1 Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{ "key": "baseUrl", "value": "http://localhost:5000/api/v1", "type": "string" },
+		{ "key": "trackId", "value": "", "type": "string" },
+		{ "key": "programId", "value": "", "type": "string" },
+		{ "key": "moduleId", "value": "", "type": "string" },
+		{ "key": "lessonId", "value": "", "type": "string" },
+		{ "key": "applicationId", "value": "", "type": "string" },
+		{ "key": "quizId", "value": "", "type": "string" },
+		{ "key": "questionId", "value": "", "type": "string" },
+		{ "key": "assignmentId", "value": "", "type": "string" },
+		{ "key": "submissionId", "value": "", "type": "string" },
+		{ "key": "sessionId", "value": "", "type": "string" },
+		{ "key": "studentId", "value": "", "type": "string" },
+		{ "key": "reviewId", "value": "", "type": "string" }
+	]
+}

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="avatarBg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A1626" />
+      <stop offset="100%" stop-color="#182C44" />
+    </linearGradient>
+    <linearGradient id="goldRing3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBE399" />
+      <stop offset="50%" stop-color="#E5A91A" />
+      <stop offset="100%" stop-color="#C68B0E" />
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="100" fill="url(#avatarBg3)" />
+  <circle cx="100" cy="100" r="95" fill="none" stroke="url(#goldRing3)" stroke-width="3" />
+  
+  <!-- Audio Engineer / Podcaster Silhouette with Studio Headphones -->
+  <!-- Head -->
+  <circle cx="100" cy="74" r="30" fill="#F7CE5F" />
+  <!-- Hair & Beard -->
+  <path d="M 72,65 C 72,40 128,40 128,65 C 120,48 80,48 72,65 Z" fill="#0A1626" />
+  <path d="M 82,90 C 82,105 118,105 118,90 Z" fill="#0A1626" />
+
+  <!-- Studio Over-Ear Headphones -->
+  <!-- Band -->
+  <path d="M 62,75 C 62,35 138,35 138,75" fill="none" stroke="url(#goldRing3)" stroke-width="6" stroke-linecap="round" />
+  <!-- Left Ear Cup -->
+  <rect x="56" y="65" width="14" height="28" rx="6" fill="#0A1626" stroke="#E5A91A" stroke-width="2" />
+  <!-- Right Ear Cup -->
+  <rect x="130" y="65" width="14" height="28" rx="6" fill="#0A1626" stroke="#E5A91A" stroke-width="2" />
+
+  <!-- Hoodie / Casual Studio Jacket -->
+  <path d="M 45,175 C 45,125 155,125 155,175 Z" fill="#102238" stroke="url(#goldRing3)" stroke-width="2" />
+  <polygon points="100,125 80,175 120,175" fill="#182C44" />
+</svg>

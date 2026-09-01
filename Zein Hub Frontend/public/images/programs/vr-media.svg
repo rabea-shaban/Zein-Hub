@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 375" width="100%" height="100%">
+  <defs>
+    <linearGradient id="vrBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#132352" />
+      <stop offset="100%" stop-color="#0F1D4A" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="375" rx="16" fill="url(#vrBg)" />
+  <!-- VR Headset & Immersive Media Grid -->
+  <g transform="translate(170, 90)">
+    <!-- 3D Perspective Grid -->
+    <line x1="0" y1="200" x2="260" y2="200" stroke="#F0D070" stroke-width="1.5" opacity="0.3" />
+    <line x1="40" y1="180" x2="220" y2="180" stroke="#F0D070" stroke-width="1.5" opacity="0.2" />
+    <!-- VR Goggles Body -->
+    <rect x="30" y="40" width="200" height="90" rx="35" fill="#091230" stroke="#F0D070" stroke-width="3" />
+    <!-- Front Screen Display -->
+    <rect x="50" y="55" width="160" height="60" rx="20" fill="#172A5E" />
+    <circle cx="95" cy="85" r="18" fill="#0F1D4A" stroke="#F0D070" stroke-width="2" />
+    <circle cx="165" cy="85" r="18" fill="#0F1D4A" stroke="#F0D070" stroke-width="2" />
+    <!-- Headstrap -->
+    <path d="M30,80 C-10,80 -10,95 30,95" fill="none" stroke="#F0D070" stroke-width="4" />
+    <path d="M230,80 C270,80 270,95 230,95" fill="none" stroke="#F0D070" stroke-width="4" />
+  </g>
+</svg>

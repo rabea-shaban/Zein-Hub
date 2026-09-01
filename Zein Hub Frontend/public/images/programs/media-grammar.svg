@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 375" width="100%" height="100%">
+  <defs>
+    <linearGradient id="mgBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#132352" />
+      <stop offset="100%" stop-color="#0F1D4A" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="375" rx="16" fill="url(#mgBg)" />
+  <!-- Editorial Script Manuscript -->
+  <g transform="translate(180, 60)">
+    <rect x="0" y="0" width="240" height="250" rx="16" fill="#091230" stroke="#F0D070" stroke-width="2" />
+    <rect x="25" y="30" width="190" height="12" rx="4" fill="#F0D070" />
+    <rect x="25" y="55" width="160" height="8" rx="4" fill="#C8D1E3" opacity="0.6" />
+    <rect x="25" y="75" width="180" height="8" rx="4" fill="#C8D1E3" opacity="0.6" />
+    <rect x="25" y="95" width="130" height="8" rx="4" fill="#C8D1E3" opacity="0.6" />
+    <!-- Editorial Pen / Stylus -->
+    <path d="M190,140 L230,100 L240,110 L200,150 Z" fill="#F0D070" />
+    <polygon points="190,140 185,155 200,150" fill="#22A06B" />
+    <!-- Grammar Verification Checkmark -->
+    <circle cx="120" cy="180" r="35" fill="#172A5E" stroke="#22A06B" stroke-width="3" />
+    <path d="M105,180 L115,190 L138,168" fill="none" stroke="#22A06B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>

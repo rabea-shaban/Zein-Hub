@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Official Brand Light Mode Tokens */
+:root {
+  --background: #F7F8FC;
+  --foreground: #111827;
+  --font-cairo: 'Cairo', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Official Brand Dark Mode Tokens (#0F1D4A Primary Blue) */
+.dark {
+  --background: #0F1D4A;
+  --foreground: #F7F8FC;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--foreground);
+  background-color: var(--background);
+  font-family: var(--font-cairo);
+  line-height: 2.0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Global Spacious Arabic Typography & Line-Height Standards */
+p, li, span.leading-body {
+  line-height: 2.0;
+}
+
+h1 {
+  line-height: 1.55 !important;
+}
+
+h2 {
+  line-height: 1.5 !important;
+}
+
+h3 {
+  line-height: 1.45 !important;
+}
+
+h4, h5, h6 {
+  line-height: 1.4 !important;
+}
+
+html[lang="en"] body {
+  font-family: var(--font-sans);
+}
+
+/* Custom scrollbar with official #0F1D4A & #F0D070 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #091230;
+}
+.light ::-webkit-scrollbar-track {
+  background: #E8EBF2;
+}
+::-webkit-scrollbar-thumb {
+  background: #172A5E;
+  border-radius: 4px;
+}
+.light ::-webkit-scrollbar-thumb {
+  background: #C8D1E3;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #F0D070;
+}
+
+/* Subtle broadcast grid overlay for hero & media preview */
+.media-grid-pattern {
+  background-image: radial-gradient(rgba(240, 208, 112, 0.12) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.dark .media-grid-pattern {
+  background-image: radial-gradient(rgba(240, 208, 112, 0.15) 1px, transparent 1px);
+}

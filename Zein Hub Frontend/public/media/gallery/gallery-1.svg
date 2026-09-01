@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="g1Bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F1D4A" />
+      <stop offset="100%" stop-color="#132352" />
+    </linearGradient>
+    <linearGradient id="g1Gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F0D070" />
+      <stop offset="100%" stop-color="#D6B552" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" rx="16" fill="url(#g1Bg)" />
+  <!-- TV Studio Lighting -->
+  <circle cx="300" cy="150" r="140" fill="#F0D070" opacity="0.08" />
+  <!-- News Anchor Silhouette & Desk -->
+  <path d="M220,240 C220,180 380,180 380,240 L400,320 L200,320 Z" fill="#172A5E" />
+  <circle cx="300" cy="160" r="35" fill="#F0D070" opacity="0.9" />
+  <!-- Desk -->
+  <polygon points="120,310 480,310 440,380 160,380" fill="#091230" stroke="#F0D070" stroke-width="2" />
+  <!-- Microphones & Teleprompter -->
+  <line x1="260" y1="310" x2="280" y2="260" stroke="#F0D070" stroke-width="3" stroke-linecap="round" />
+  <circle cx="280" cy="255" r="6" fill="#F0D070" />
+  <rect x="40" y="40" width="120" height="28" rx="14" fill="#091230" stroke="#F0D070" stroke-width="1.5" />
+  <circle cx="58" cy="54" r="5" fill="#EF4444" />
+  <text x="72" y="58" fill="#F7F8FC" font-size="11" font-family="sans-serif" font-weight="bold">LIVE STUDIO</text>
+  <text x="300" y="360" fill="#F7F8FC" font-size="13" font-family="sans-serif" font-weight="bold" text-anchor="middle">استوديو الإلقاء والتحاور التلفزيوني</text>
+</svg>

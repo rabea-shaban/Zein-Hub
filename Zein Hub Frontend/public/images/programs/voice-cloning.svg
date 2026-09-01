@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 375" width="100%" height="100%">
+  <defs>
+    <linearGradient id="vcBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F1D4A" />
+      <stop offset="100%" stop-color="#091230" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="375" rx="16" fill="url(#vcBg)" />
+  <!-- Waveform Synthesis & Ethics Lock -->
+  <g transform="translate(160, 70)">
+    <!-- Neural Waveforms -->
+    <path d="M20,110 Q70,40 120,110 T220,110 T260,110" fill="none" stroke="#F0D070" stroke-width="3" />
+    <path d="M20,110 Q70,60 120,110 T220,110 T260,110" fill="none" stroke="#22A06B" stroke-width="2" opacity="0.7" />
+    <!-- Audio Ethics Keylock Badge -->
+    <circle cx="140" cy="110" r="40" fill="#091230" stroke="#F0D070" stroke-width="2.5" />
+    <rect x="127" y="105" width="26" height="20" rx="4" fill="#F0D070" />
+    <path d="M132,105 L132,95 C132,88 148,88 148,95 L148,105" fill="none" stroke="#F0D070" stroke-width="3" />
+    <circle cx="140" cy="114" r="2.5" fill="#091230" />
+  </g>
+</svg>

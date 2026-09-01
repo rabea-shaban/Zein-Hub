@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="g2Bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#132352" />
+      <stop offset="100%" stop-color="#0F1D4A" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" rx="16" fill="url(#g2Bg)" />
+  <!-- MoJo Smartphone Rig -->
+  <g transform="translate(180, 70)">
+    <!-- Smartphone Frame -->
+    <rect x="50" y="30" width="140" height="220" rx="20" fill="#091230" stroke="#F0D070" stroke-width="3" />
+    <rect x="62" y="50" width="116" height="180" rx="10" fill="#172A5E" />
+    <!-- Camera Lens Multi Array -->
+    <circle cx="120" cy="110" r="28" fill="#0F1D4A" stroke="#F0D070" stroke-width="2" />
+    <circle cx="120" cy="110" r="14" fill="#F0D070" opacity="0.8" />
+    <circle cx="120" cy="110" r="6" fill="#F7F8FC" />
+    <!-- Hand Grip / Gimbal Mount -->
+    <rect x="105" y="250" width="30" height="80" rx="8" fill="#091230" stroke="#F0D070" stroke-width="2" />
+    <!-- Audio Meter Bars on Screen -->
+    <rect x="75" y="195" width="8" height="20" rx="2" fill="#22A06B" />
+    <rect x="87" y="185" width="8" height="30" rx="2" fill="#22A06B" />
+    <rect x="99" y="175" width="8" height="40" rx="2" fill="#F0D070" />
+    <rect x="111" y="190" width="8" height="25" rx="2" fill="#22A06B" />
+  </g>
+  <rect x="40" y="40" width="130" height="28" rx="14" fill="#091230" stroke="#F0D070" stroke-width="1.5" />
+  <circle cx="58" cy="54" r="5" fill="#22A06B" />
+  <text x="72" y="58" fill="#F7F8FC" font-size="11" font-family="sans-serif" font-weight="bold">MOJO FIELD RIG</text>
+  <text x="300" y="370" fill="#F7F8FC" font-size="13" font-family="sans-serif" font-weight="bold" text-anchor="middle">التصوير الصحفي الميداني بالموبايل</text>
+</svg>

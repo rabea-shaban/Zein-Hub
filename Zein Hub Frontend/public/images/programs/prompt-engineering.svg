@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 375" width="100%" height="100%">
+  <defs>
+    <linearGradient id="peBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#132352" />
+      <stop offset="100%" stop-color="#0F1D4A" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="375" rx="16" fill="url(#peBg)" />
+  <!-- AI Prompt Terminal & Neural Nodes -->
+  <g transform="translate(160, 65)">
+    <!-- Terminal Window -->
+    <rect x="0" y="0" width="280" height="240" rx="16" fill="#091230" stroke="#F0D070" stroke-width="2.5" />
+    <!-- Header Dots -->
+    <circle cx="25" cy="20" r="5" fill="#EF4444" />
+    <circle cx="42" cy="20" r="5" fill="#F0D070" />
+    <circle cx="59" cy="20" r="5" fill="#22A06B" />
+    <!-- Prompt Command Line -->
+    <text x="25" y="60" fill="#22A06B" font-size="14" font-family="monospace" font-weight="bold">&gt; PROMPT: GENERATE_MEDIA</text>
+    <rect x="25" y="80" width="200" height="8" rx="4" fill="#F0D070" opacity="0.8" />
+    <rect x="25" y="100" width="160" height="8" rx="4" fill="#C8D1E3" opacity="0.5" />
+    <!-- Sparkles AI Matrix -->
+    <polygon points="140,140 148,160 168,168 148,176 140,196 132,176 112,168 132,160" fill="#F0D070" />
+    <polygon points="210,130 215,145 230,150 215,155 210,170 205,155 190,150 205,145" fill="#22A06B" />
+  </g>
+</svg>

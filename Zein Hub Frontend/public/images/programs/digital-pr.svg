@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 375" width="100%" height="100%">
+  <defs>
+    <linearGradient id="prBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F1D4A" />
+      <stop offset="100%" stop-color="#132352" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="375" rx="16" fill="url(#prBg)" />
+  <!-- Media Network & Press Relations Node Mesh -->
+  <g transform="translate(180, 75)">
+    <!-- Central Megaphone / PR Hub -->
+    <circle cx="120" cy="110" r="45" fill="#091230" stroke="#F0D070" stroke-width="3" />
+    <!-- Megaphone Icon -->
+    <polygon points="105,95 135,80 135,140 105,125" fill="#F0D070" />
+    <rect x="95" y="102" width="12" height="16" rx="3" fill="#F0D070" />
+    <!-- Network Satellites -->
+    <line x1="120" y1="65" x2="120" y2="15" stroke="#F0D070" stroke-width="2" stroke-dasharray="4 2" />
+    <circle cx="120" cy="15" r="14" fill="#22A06B" />
+
+    <line x1="75" y1="110" x2="20" y2="110" stroke="#F0D070" stroke-width="2" stroke-dasharray="4 2" />
+    <circle cx="20" cy="110" r="14" fill="#172A5E" stroke="#F0D070" stroke-width="2" />
+
+    <line x1="165" y1="110" x2="220" y2="110" stroke="#F0D070" stroke-width="2" stroke-dasharray="4 2" />
+    <circle cx="220" cy="110" r="14" fill="#172A5E" stroke="#F0D070" stroke-width="2" />
+
+    <line x1="120" y1="155" x2="120" y2="205" stroke="#F0D070" stroke-width="2" stroke-dasharray="4 2" />
+    <circle cx="120" cy="205" r="14" fill="#22A06B" />
+  </g>
+</svg>

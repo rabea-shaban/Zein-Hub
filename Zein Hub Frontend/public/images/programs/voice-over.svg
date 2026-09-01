@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 375" width="100%" height="100%">
+  <defs>
+    <linearGradient id="voBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F1D4A" />
+      <stop offset="100%" stop-color="#091230" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="375" rx="16" fill="url(#voBg)" />
+  <circle cx="300" cy="180" r="130" fill="#F0D070" opacity="0.08" />
+  <!-- Vocalise Waveform Rings -->
+  <circle cx="300" cy="180" r="90" fill="none" stroke="#F0D070" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.4" />
+  <circle cx="300" cy="180" r="60" fill="none" stroke="#F0D070" stroke-width="2" opacity="0.6" />
+  <!-- Studio Microphone -->
+  <g transform="translate(265, 90)">
+    <rect x="25" y="10" width="20" height="55" rx="10" fill="#091230" stroke="#F0D070" stroke-width="2.5" />
+    <line x1="25" y1="30" x2="45" y2="30" stroke="#F0D070" stroke-width="1.5" />
+    <line x1="25" y1="45" x2="45" y2="45" stroke="#F0D070" stroke-width="1.5" />
+    <!-- Shockmount -->
+    <path d="M10,50 C10,90 60,90 60,50" fill="none" stroke="#F0D070" stroke-width="3" />
+    <line x1="35" y1="90" x2="35" y2="140" stroke="#F0D070" stroke-width="4" stroke-linecap="round" />
+    <ellipse cx="35" cy="140" rx="30" ry="10" fill="#172A5E" stroke="#F0D070" stroke-width="2" />
+  </g>
+  <!-- Pop Filter -->
+  <circle cx="280" cy="135" r="28" fill="none" stroke="#F0D070" stroke-width="2" opacity="0.7" />
+  <line x1="252" y1="135" x2="240" y2="170" stroke="#F0D070" stroke-width="2" />
+  <!-- Digital Vocalise Waves -->
+  <path d="M100,280 Q150,220 200,280 T300,280 T400,280 T500,280" fill="none" stroke="#F0D070" stroke-width="3" />
+  <path d="M100,280 Q150,240 200,280 T300,280 T400,280 T500,280" fill="none" stroke="#22A06B" stroke-width="1.5" opacity="0.6" />
+</svg>

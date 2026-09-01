@@ -1,0 +1,57 @@
+{
+	"info": {
+		"_postman_id": "zein-hub-phase-01-collection",
+		"name": "Zein Hub API - Phase 01 Foundation",
+		"description": "Postman Collection for testing Zein Hub Backend Phase 01: Foundation & Health Check",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/health",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"health"
+					]
+				},
+				"description": "Check if API server and MongoDB are running and operational"
+			},
+			"response": []
+		},
+		{
+			"name": "404 Not Found Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/non-existent-route",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"non-existent-route"
+					]
+				},
+				"description": "Check standard 404 response when requesting non-existent endpoint"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000",
+			"type": "string"
+		}
+	]
+}
