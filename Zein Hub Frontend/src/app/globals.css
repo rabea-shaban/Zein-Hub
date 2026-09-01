@@ -10,10 +10,9 @@
   --foreground: #111827;
   --font-cairo: 'Cairo', system-ui, -apple-system, sans-serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --gold-primary: #FABF30;
-  --gold-highlight: #FFE658;
-  --gold-amber: #D0880B;
-  --gold-shadow: #BC7602;
+  --gold-primary: #D4AF37;
+  --gold-light: #FFD966;
+  --gold-dark: #A66A00;
 }
 
 /* Official Brand Dark Mode Tokens (#0F1D4A Primary Blue) */
@@ -62,7 +61,7 @@ html[lang="en"] body {
   font-family: var(--font-sans);
 }
 
-/* Custom scrollbar with official #0F1D4A & logo gold #FABF30 */
+/* Custom scrollbar with official #0F1D4A & logo gold #D4AF37 */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -80,46 +79,49 @@ html[lang="en"] body {
   background: #C8D1E3;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #FABF30;
+  background: #D4AF37;
 }
 
 /* Subtle broadcast grid overlay for hero & media preview */
 .media-grid-pattern {
-  background-image: radial-gradient(rgba(250, 191, 48, 0.14) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(212, 175, 55, 0.12) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 .dark .media-grid-pattern {
-  background-image: radial-gradient(rgba(250, 191, 48, 0.18) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(212, 175, 55, 0.16) 1px, transparent 1px);
 }
 
-/* 🌟 Luxury 3D Metallic Gold Button (Exact Logo Gradient) */
+/* 🌟 Official Solid Gold Button (#D4AF37) with #FFD966 Hover */
 .btn-gold {
-  background: linear-gradient(135deg, #FFE658 0%, #FABF30 35%, #E5A823 70%, #D0880B 100%);
-  color: #091230;
+  background-color: #D4AF37;
+  color: #050505;
   font-weight: 800;
-  box-shadow: 0 4px 18px -3px rgba(250, 191, 48, 0.45);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px -2px rgba(212, 175, 55, 0.35);
+  transition: all 0.2s ease-in-out;
 }
 .btn-gold:hover {
-  background: linear-gradient(135deg, #FFF0A3 0%, #FEDB51 35%, #FABF30 70%, #E5A823 100%);
-  box-shadow: 0 6px 24px -3px rgba(250, 191, 48, 0.60);
-  transform: translateY(-1px);
+  background-color: #FFD966;
+  box-shadow: 0 6px 18px -2px rgba(212, 175, 55, 0.45);
 }
 .btn-gold:active {
-  transform: translateY(0);
+  background-color: #A66A00;
 }
 
-/* ✨ Active Link & Tab Styling */
+/* ✨ Active Navigation Link & Tab (#D4AF37) */
 .nav-link-active {
-  background: linear-gradient(135deg, #FFE658 0%, #FABF30 45%, #E5A823 100%);
-  color: #091230 !important;
+  background-color: #D4AF37;
+  color: #050505 !important;
   font-weight: 800;
-  box-shadow: 0 4px 14px -2px rgba(250, 191, 48, 0.35);
+  box-shadow: 0 4px 12px -2px rgba(212, 175, 55, 0.30);
 }
 
-/* 🏆 Golden Text Gradient for Headings & Accents */
-.text-gold-gradient {
-  background: linear-gradient(180deg, #FFE658 0%, #FABF30 45%, #BC7602 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* 🏆 Solid Gold Text Utility */
+.text-gold {
+  color: #D4AF37;
+}
+.border-gold {
+  border-color: #D4AF37;
+}
+.bg-gold {
+  background-color: #D4AF37;
 }

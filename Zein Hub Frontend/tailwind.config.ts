@@ -12,32 +12,38 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        // 🌟 Official Zein Hub 3D Metallic Gold Palette (Extracted from Logo)
+        // 🌟 Official Zein Hub Readability Gold Palette (#D4AF37)
         gold: {
-          50: "#FFFDF0",
+          DEFAULT: "#D4AF37",
+          50: "#FFFDF2",
           100: "#FFF9D6",
-          200: "#FFF0A3",
-          300: "#FFE658", // Crystal Highlight Gold
-          400: "#FEDB51", // Radiant Gold Glow
-          500: "#FABF30", // Primary Official Metallic Gold (#FABF30)
-          600: "#E5A823", // Deep Rich Gold
-          700: "#D0880B", // Warm Amber Gold
-          800: "#BC7602", // Deep Bronze Gold Shadow
-          900: "#9F5B00", // Dark Accent Shadow
-          950: "#612F00", // Extra Deep Shade
+          200: "#FFF1A8",
+          300: "#FFD966", // Light / Hover Gold (#FFD966)
+          400: "#E3C24B",
+          500: "#D4AF37", // Primary Solid Readable Gold (#D4AF37)
+          600: "#BD9A2C",
+          700: "#A66A00", // Dark Gold Accent (#A66A00)
+          800: "#875500",
+          900: "#694100",
+          950: "#452A00",
+          light: "#FFD966",
+          dark: "#A66A00",
         },
         brand: {
-          50: "#FFFDF0",
+          DEFAULT: "#D4AF37",
+          50: "#FFFDF2",
           100: "#FFF9D6",
-          200: "#FFF0A3",
-          300: "#FFE658",
-          400: "#FEDB51",
-          500: "#FABF30",
-          600: "#E5A823",
-          700: "#D0880B",
-          800: "#BC7602",
-          900: "#9F5B00",
-          950: "#612F00",
+          200: "#FFF1A8",
+          300: "#FFD966",
+          400: "#E3C24B",
+          500: "#D4AF37",
+          600: "#BD9A2C",
+          700: "#A66A00",
+          800: "#875500",
+          900: "#694100",
+          950: "#452A00",
+          light: "#FFD966",
+          dark: "#A66A00",
         },
         // Official Brand Palette — Primary Blue #0F1D4A
         navy: {
@@ -68,8 +74,8 @@ const config: Config = {
         heading: "1.35",
       },
       boxShadow: {
-        'gold-glow': '0 0 25px -5px rgba(250, 191, 48, 0.45)',
-        'gold-card': '0 8px 30px -8px rgba(250, 191, 48, 0.25)',
+        'gold-glow': '0 0 25px -5px rgba(212, 175, 55, 0.40)',
+        'gold-card': '0 8px 30px -8px rgba(212, 175, 55, 0.20)',
         'navy-card': '0 10px 30px -10px rgba(15, 29, 74, 0.25)',
       }
     },

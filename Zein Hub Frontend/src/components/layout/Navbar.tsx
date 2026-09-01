@@ -125,8 +125,8 @@ export function Navbar() {
                   href={link.href}
                   className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
                     isActive
-                      ? "text-navy-950 bg-gradient-to-r from-gold-300 via-gold-500 to-gold-600 shadow-md shadow-gold-500/20 font-black"
-                      : "text-slate-700 dark:text-slate-300 hover:text-gold-600 dark:hover:text-gold-400 hover:bg-slate-100 dark:hover:bg-navy-900"
+                      ? "text-[#050505] bg-[#D4AF37] shadow-md shadow-[#D4AF37]/20 font-black border border-[#D4AF37]"
+                      : "text-slate-700 dark:text-slate-300 hover:text-[#D4AF37] dark:hover:text-[#FFD966] hover:bg-slate-100 dark:hover:bg-navy-900"
                   }`}
                 >
                   {link.label}

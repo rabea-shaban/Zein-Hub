@@ -13,11 +13,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       "inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
 
     const variants = {
-      primary: "bg-gradient-to-r from-gold-300 via-gold-500 to-gold-600 text-navy-950 font-black hover:from-gold-200 hover:via-gold-400 hover:to-gold-500 active:from-gold-600 active:to-gold-700 shadow-md shadow-gold-500/25 border border-gold-400/40",
+      primary: "bg-[#D4AF37] text-[#050505] font-bold hover:bg-[#FFD966] active:bg-[#A66A00] shadow-md shadow-[#D4AF37]/20 border border-[#D4AF37]",
       secondary:
         "bg-navy-900 text-white hover:bg-navy-800 active:bg-navy-950",
       outline:
-        "border border-gold-500/40 bg-transparent text-navy-900 hover:bg-gold-500/10 dark:border-gold-500/40 dark:text-gold-400 dark:hover:bg-navy-800",
+        "border border-[#D4AF37] bg-transparent text-navy-900 hover:bg-[#D4AF37]/10 dark:border-[#D4AF37] dark:text-[#D4AF37] dark:hover:bg-navy-800",
       ghost:
         "bg-transparent text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
     };
