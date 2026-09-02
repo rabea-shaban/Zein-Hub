@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { supabase } from '../config/supabase.config.js';
 import { ENV } from '../config/env.config.js';
-import { ApiError } from '../utils/ApiError.js';
+import { ApiError } from '../utils/apiError.js';
 import { HTTP_STATUS } from '../constants/httpStatusCodes.js';
 
 export interface UploadResult {

@@ -83,7 +83,7 @@ export class InstructorsController {
 
   public static changeStatus = async (req: Request, res: Response): Promise<Response> => {
     const id = req.params.id as string;
-    const result = await InstructorsService.changeStatus(id, req.body.isActive);
+    const result = await InstructorsService.changeInstructorStatus(id, req.body.isActive);
     return ApiResponse.send(
       res,
       HTTP_STATUS.OK,

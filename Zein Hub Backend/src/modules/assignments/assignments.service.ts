@@ -106,7 +106,7 @@ export class AssignmentsService {
     let programIds: mongoose.Types.ObjectId[] = [];
 
     if (userRole === UserRole.STUDENT) {
-      const enrollments = await Enrollment.find({
+      const enrollments: any[] = await (Enrollment as any).find({
         studentId: new mongoose.Types.ObjectId(userId),
         status: { $in: ['active', 'completed'] },
       }).select('programId');

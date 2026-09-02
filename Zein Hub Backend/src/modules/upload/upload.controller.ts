@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StorageService } from '../../services/storage.service.js';
-import { ApiResponse } from '../../utils/ApiResponse.js';
-import { ApiError } from '../../utils/ApiError.js';
+import { ApiResponse } from '../../utils/apiResponse.js';
+import { ApiError } from '../../utils/apiError.js';
 import { HTTP_STATUS } from '../../constants/httpStatusCodes.js';
 
 export class UploadController {

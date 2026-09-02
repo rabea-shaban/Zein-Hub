@@ -1,6 +1,6 @@
 import multer from 'multer';
 import { Request } from 'express';
-import { ApiError } from '../utils/ApiError.js';
+import { ApiError } from '../utils/apiError.js';
 import { HTTP_STATUS } from '../constants/httpStatusCodes.js';
 
 const storage = multer.memoryStorage();

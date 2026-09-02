@@ -13,12 +13,9 @@ export class CertificatesService {
     const studentObjId = new mongoose.Types.ObjectId(studentId);
 
     // 1. Find all 100% completed enrollments for this student
-    const completedEnrollments = await Enrollment.find({
+    const completedEnrollments: any[] = await (Enrollment as any).find({
       studentId: studentObjId,
-      $or: [
-        { status: 'completed' },
-        { progressPercentage: { $gte: 100 } },
-      ],
+      status: 'completed',
     }).populate('programId');
 
     // 2. Ensure each completed enrollment has an issued certificate

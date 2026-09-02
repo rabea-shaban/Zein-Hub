@@ -85,7 +85,7 @@ export class LiveSessionsService {
       ];
     } else if (userRole === UserRole.STUDENT && userId) {
       const studentObjId = new mongoose.Types.ObjectId(userId);
-      const enrollments = await Enrollment.find({
+      const enrollments: any[] = await (Enrollment as any).find({
         studentId: studentObjId,
         status: { $in: ['active', 'completed'] },
       }).select('programId');

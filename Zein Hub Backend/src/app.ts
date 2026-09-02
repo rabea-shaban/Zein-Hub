@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import { ENV } from './config/env.config.js';
+import { connectDB } from './config/db.config.js';
 import apiRouter from './routes/index.js';
 import { notFound } from './middlewares/notFound.js';
 import { errorHandler } from './middlewares/errorHandler.js';
@@ -18,6 +19,17 @@ const app: Application = express();
 
 // Trust proxy for rate limiter if deployed behind load balancers/reverse proxies
 app.set('trust proxy', 1);
+
+// Ensure Database connection for serverless cold starts
+app.use(async (_req, _res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('[DB Middleware Error]', err);
+    next(err);
+  }
+});
 
 // 1. Security Headers via Helmet & Custom Security Headers
 app.use(

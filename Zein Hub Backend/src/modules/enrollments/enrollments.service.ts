@@ -225,4 +225,17 @@ export class EnrollmentsService {
 
     return populated || enrollment;
   }
+
+  /**
+   * Delete student user account and all their enrollments & progress
+   */
+  public static async deleteStudentUser(studentId: string): Promise<void> {
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      throw ApiError.badRequest('Invalid student ID format');
+    }
+    const studentObjId = new mongoose.Types.ObjectId(studentId);
+    await Enrollment.deleteMany({ studentId: studentObjId });
+    await Progress.deleteMany({ studentId: studentObjId });
+    await User.findByIdAndDelete(studentId);
+  }
 }
