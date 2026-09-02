@@ -69,18 +69,6 @@ export function mapBackendProgramToFrontend(raw: any, fallbackPrograms: Program[
       ? "Tech & AI Solutions"
       : "Strategic Growth & PR";
 
-  const defaultWeeks = Array.from({ length: Math.min(6, raw.durationWeeks || 4) }, (_, i) => ({
-    weekNumber: i + 1,
-    title: `المرحلة التطبيقية 0${i + 1}: التدريب العملي وبناء المهارة`,
-    titleEn: `Module 0${i + 1}: Hands-on Practical Studio Training`,
-    description: `تطبيقات مكثفة ومحاكاة عملية داخل استوديوهات Zein Hub تحت إشراف نخبة من المدربين.`,
-    descriptionEn: `Practical hands-on studio drills and simulations under the supervision of senior coaches.`,
-    topics: ["التطبيقات العملية المباشرة", "التمارين والاستوديو الميداني", "معايير الجودة والتقييم"],
-    topicsEn: ["Live hands-on practice", "Studio exercises", "Industry standards & review"],
-    practicalProject: `تسجيل وتطبيق مشروع المرحلة 0${i + 1}`,
-    practicalProjectEn: `Record & produce module project 0${i + 1}`,
-  }));
-
   return {
     id: raw._id || raw.id || matchFallback?.id || raw.slug,
     slug: raw.slug || matchFallback?.slug || "",
@@ -133,7 +121,7 @@ export function mapBackendProgramToFrontend(raw: any, fallbackPrograms: Program[
       "Master hands-on practical industry techniques",
       "Produce a certified portfolio capstone project",
     ],
-    curriculum: (raw.curriculum && raw.curriculum.length > 0) ? raw.curriculum : (matchFallback?.curriculum || defaultWeeks),
+    curriculum: Array.isArray(raw.curriculum) ? raw.curriculum : [],
     toolsAndGear: raw.toolsAndGear || matchFallback?.toolsAndGear || ["استوديوهات Zein Hub الصوتية والمرئية", "البرمجيات والأجهزة الاحترافية"],
     toolsAndGearEn: raw.toolsAndGearEn || matchFallback?.toolsAndGearEn || ["Zein Hub Media Studios", "Industry-Grade Gear & Software"],
     capstoneProject: raw.capstoneProject || matchFallback?.capstoneProject || {

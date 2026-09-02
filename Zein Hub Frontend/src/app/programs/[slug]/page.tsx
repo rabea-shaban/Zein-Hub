@@ -42,14 +42,9 @@ export async function generateMetadata({
 }: ProgramDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
-  let program = getProgramBySlug(decodedSlug);
 
-  if (!program) {
-    const backendRes = await fetchProgramFromBackend(decodedSlug);
-    if (backendRes) {
-      program = backendRes.program;
-    }
-  }
+  const backendRes = await fetchProgramFromBackend(decodedSlug);
+  const program = backendRes?.program || getProgramBySlug(decodedSlug);
 
   if (!program) {
     return {
@@ -68,15 +63,16 @@ export default async function ProgramDetailPage({
 }: ProgramDetailPageProps) {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
-  let program = getProgramBySlug(decodedSlug);
+
+  let program: any = null;
   let backendInstructorData: any = null;
 
-  if (!program) {
-    const backendRes = await fetchProgramFromBackend(decodedSlug);
-    if (backendRes) {
-      program = backendRes.program;
-      backendInstructorData = backendRes.instructorData;
-    }
+  const backendRes = await fetchProgramFromBackend(decodedSlug);
+  if (backendRes) {
+    program = backendRes.program;
+    backendInstructorData = backendRes.instructorData;
+  } else {
+    program = getProgramBySlug(decodedSlug);
   }
 
   if (!program) {

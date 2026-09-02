@@ -223,7 +223,7 @@ export function ProgramDetailClient({
           )}
 
           {/* 2. Detailed Week-by-Week Curriculum Accordion */}
-          {program.curriculum && program.curriculum.length > 0 && (
+          {program.curriculum && program.curriculum.length > 0 ? (
             <div className="space-y-6">
               <div className="space-y-1.5">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-navy-900 border border-slate-200 dark:border-navy-700 text-gold-700 dark:text-gold-400 text-xs font-semibold">
@@ -306,14 +306,11 @@ export function ProgramDetailClient({
                           )}
 
                           {weekProject && (
-                            <div className="p-3.5 rounded-xl bg-gold-500/5 border border-gold-500/20 text-xs text-gold-900 dark:text-gold-300 flex items-start gap-2.5">
-                              
-                              <div>
-                                <strong className="block text-slate-900 dark:text-white pb-0.5">
-                                  {t.weeklyAssignment}
-                                </strong>
-                                <span className="leading-relaxed">{weekProject}</span>
-                              </div>
+                            <div className="pt-2 border-t border-slate-200/60 dark:border-navy-800 flex items-center gap-2 text-xs font-semibold text-gold-600 dark:text-gold-400">
+                              <Film className="h-3.5 w-3.5" />
+                              <span>
+                                {language === "en" ? "Weekly Practical Deliverable:" : "التطبيق العملي للأسبوع:"} {weekProject}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -322,6 +319,18 @@ export function ProgramDetailClient({
                   );
                 })}
               </div>
+            </div>
+          ) : (
+            <div className="p-6 sm:p-8 rounded-3xl bg-slate-50 dark:bg-navy-950 border border-dashed border-slate-300 dark:border-navy-800 text-center space-y-2">
+              <Layers className="h-8 w-8 text-gold-500 mx-auto opacity-70" />
+              <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm sm:text-base">
+                {language === "en" ? "Curriculum Schedule Under Preparation" : "المنهج والجدول الدراسي قيد الإعداد"}
+              </h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                {language === "en"
+                  ? "The detailed week-by-week syllabus will be published shortly by the academic faculty."
+                  : "سيتم نشر تفاصيل الأسابيع والمحاضرات التدريبية قريباً من قِبل إدارة الأكاديمية والمحاضر المسؤول."}
+              </p>
             </div>
           )}
 
