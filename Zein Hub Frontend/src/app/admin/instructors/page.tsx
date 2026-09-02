@@ -120,7 +120,7 @@ export default function AdminInstructorsPage() {
 
   const [instructors, setInstructors] = useState<InstructorItem[]>([]);
   const [tracks, setTracks] = useState<TrackItem[]>([]);
-  const [allPrograms, setAllPrograms] = useState<{ _id: string; titleAr: string; titleEn: string; slug: string }[]>([]);
+  const [allPrograms, setAllPrograms] = useState<{ _id: string; titleAr: string; titleEn: string; slug: string; instructorId?: any }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -131,6 +131,16 @@ export default function AdminInstructorsPage() {
 
   const [editSubmitting, setEditSubmitting] = useState(false);
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
+  const [editErrors, setEditErrors] = useState<Record<string, string>>({});
+  const [editApiError, setEditApiError] = useState<string | null>(null);
+
+  const clearEditError = (field: string) => {
+    setEditErrors((prev) => {
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
 
   // Assigned Programs for Create Form
   const [createAssignedPrograms, setCreateAssignedPrograms] = useState<string[]>([]);
@@ -292,6 +302,8 @@ export default function AdminInstructorsPage() {
       : [];
 
     setSelectedEditInstructor(inst);
+    setEditErrors({});
+    setEditApiError(null);
     setEditFormData({
       fullName: rawName,
       phone,
@@ -309,6 +321,35 @@ export default function AdminInstructorsPage() {
     e.preventDefault();
     if (!selectedEditInstructor) return;
 
+    setEditApiError(null);
+    const errs: Record<string, string> = {};
+
+    if (!editFormData.fullName?.trim()) {
+      errs.fullName = isAr ? 'الاسم الكامل مطلوب' : 'Full name is required';
+    } else if (editFormData.fullName.trim().length < 2) {
+      errs.fullName = isAr ? 'الاسم يجب أن يحتوي على حرفين على الأقل' : 'Name must be at least 2 characters';
+    }
+
+    if (!editFormData.specializations?.trim()) {
+      errs.specializations = isAr ? 'التخصصات مطلوبة' : 'Specializations are required';
+    }
+
+    if (!editFormData.bio?.trim()) {
+      errs.bio = isAr ? 'النبذة المهنية للمحاضر مطلوبة' : 'Professional biography is required';
+    } else if (editFormData.bio.trim().length < 5) {
+      errs.bio = isAr ? 'النبذة يجب أن تكون 5 أحرف على الأقل' : 'Bio must be at least 5 characters';
+    }
+
+    if (isNaN(Number(editFormData.experienceYears)) || Number(editFormData.experienceYears) < 0) {
+      errs.experienceYears = isAr ? 'سنوات الخبرة يجب أن تكون 0 أو أكثر' : 'Experience must be 0 or more';
+    }
+
+    setEditErrors(errs);
+    if (Object.keys(errs).length > 0) {
+      toast.error(isAr ? 'يرجى مراجعة وتصحيح الحقول المطلوبة' : 'Please fix the form errors');
+      return;
+    }
+
     setEditSubmitting(true);
     try {
       const specs = editFormData.specializations
@@ -317,21 +358,23 @@ export default function AdminInstructorsPage() {
         .filter(Boolean);
 
       await api.patch(`/instructors/${selectedEditInstructor._id}`, {
-        fullName: editFormData.fullName,
-        phone: editFormData.phone || undefined,
+        fullName: editFormData.fullName.trim(),
+        phone: editFormData.phone?.trim() || undefined,
         avatarUrl: editFormData.avatarUrl || undefined,
         specializations: specs,
-        bio: editFormData.bio,
+        bio: editFormData.bio.trim(),
         experienceYears: Number(editFormData.experienceYears),
         isActive: editFormData.isActive,
         assignedPrograms: editFormData.assignedPrograms,
       });
 
-      toast.success(isAr ? 'تم حفظ تعديلات المحاضر بنجاح' : 'Instructor updated successfully');
+      toast.success(isAr ? 'تم حفظ وتحديث بيانات المحاضر بنجاح' : 'Instructor updated successfully');
       setSelectedEditInstructor(null);
       fetchData();
     } catch (err: any) {
-      toast.error(err.message || (isAr ? 'فشل حفظ تعديلات المحاضر' : 'Failed to update instructor'));
+      const msg = err.message || (isAr ? 'فشل حفظ تعديلات المحاضر' : 'Failed to update instructor');
+      setEditApiError(msg);
+      toast.error(msg);
     } finally {
       setEditSubmitting(false);
     }
@@ -680,54 +723,61 @@ export default function AdminInstructorsPage() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 font-cairo">
-                    {isAr ? 'تحديد البرامج التي سيدرسها المحاضر (حصرياً):' : 'Assign Programs to Teach (Exclusive):'}
+                    {isAr ? 'تحديد البرامج التدريبية المتاحة للتدريس:' : 'Assign Available Programs:'}
                   </label>
                   <span className="text-[10px] text-gray-400 font-normal">
-                    {isAr ? '* البرنامج يدرسه مدرب واحد فقط' : '* 1 Instructor per program'}
+                    {isAr ? '* تظهر البرامج غير المسندة فقط' : '* Unassigned programs only'}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800">
-                  {allPrograms.map((prog) => {
-                    const checked = createAssignedPrograms.includes(prog._id);
-                    const currentTeacher = instructors.find((inst) => {
-                      const assigned = inst.instructorProfile?.assignedPrograms || [];
+                {(() => {
+                  const availableForCreate = allPrograms.filter((prog) => {
+                    const isAssigned = instructors.some((inst) => {
+                      const assigned = inst.instructorProfile?.assignedPrograms || (inst as any).assignedPrograms || [];
                       return assigned.some((p: any) => (typeof p === 'object' ? p._id : p) === prog._id);
                     });
-                    const currentTeacherName = currentTeacher?.fullName || currentTeacher?.userId?.fullName || currentTeacher?.user?.fullName;
+                    return !isAssigned && !prog.instructorId;
+                  });
 
+                  if (availableForCreate.length === 0) {
                     return (
-                      <label
-                        key={prog._id}
-                        className={`flex flex-col p-2.5 rounded-lg text-xs font-bold cursor-pointer transition-all ${
-                          checked
-                            ? 'bg-gold-500/20 text-gold-600 dark:text-gold-400 border border-gold-500/30'
-                            : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-850'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setCreateAssignedPrograms([...createAssignedPrograms, prog._id]);
-                              } else {
-                                setCreateAssignedPrograms(createAssignedPrograms.filter((id) => id !== prog._id));
-                              }
-                            }}
-                            className="rounded text-gold-500 focus:ring-gold-500"
-                          />
-                          <span className="truncate">{isAr ? prog.titleAr : prog.titleEn || prog.titleAr}</span>
-                        </div>
-                        {currentTeacherName && (
-                          <span className="text-[10px] text-amber-500 dark:text-amber-400 font-normal mt-1 ps-6 truncate">
-                            {isAr ? `(مسند حالياً لـ: ${currentTeacherName})` : `(Assigned to: ${currentTeacherName})`}
-                          </span>
-                        )}
-                      </label>
+                      <div className="p-4 rounded-xl bg-gray-50 dark:bg-navy-950 border border-dashed border-gray-200 dark:border-navy-800 text-center text-xs text-gray-500 dark:text-gray-400 font-cairo">
+                        <span>{isAr ? 'جميع البرامج التدريبية مسندة حالياً لمدربين بالفعل.' : 'All programs are currently assigned.'}</span>
+                      </div>
                     );
-                  })}
-                </div>
+                  }
+
+                  return (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800">
+                      {availableForCreate.map((prog) => {
+                        const checked = createAssignedPrograms.includes(prog._id);
+                        return (
+                          <label
+                            key={prog._id}
+                            className={`flex items-center gap-2 p-2.5 rounded-lg text-xs font-bold cursor-pointer transition-all ${
+                              checked
+                                ? 'bg-gold-500/20 text-gold-600 dark:text-gold-400 border border-gold-500/30'
+                                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-850'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setCreateAssignedPrograms([...createAssignedPrograms, prog._id]);
+                                } else {
+                                  setCreateAssignedPrograms(createAssignedPrograms.filter((id) => id !== prog._id));
+                                }
+                              }}
+                              className="rounded text-gold-500 focus:ring-gold-500"
+                            />
+                            <span className="truncate">{isAr ? prog.titleAr : prog.titleEn || prog.titleAr}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-navy-800">
@@ -769,76 +819,80 @@ export default function AdminInstructorsPage() {
               </button>
             </div>
 
-            <form onSubmit={handleEditSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                  {isAr ? 'الاسم الكامل' : 'Full Name'}
-                </label>
+            <form onSubmit={handleEditSubmit} className="space-y-4" noValidate>
+              {editApiError && (
+                <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center gap-2 font-cairo">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{editApiError}</span>
+                </div>
+              )}
+
+              <FormField label={isAr ? 'الاسم الكامل' : 'Full Name'} error={editErrors.fullName} required>
                 <input
                   type="text"
-                  required
                   value={editFormData.fullName}
-                  onChange={(e) => setEditFormData({ ...editFormData, fullName: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500"
+                  onChange={(e) => {
+                    setEditFormData({ ...editFormData, fullName: e.target.value });
+                    if (editErrors.fullName) clearEditError('fullName');
+                  }}
+                  placeholder={isAr ? 'د. أحمد محمود' : 'Dr. Ahmed Mahmoud'}
+                  className={inputClass(!!editErrors.fullName)}
                 />
-              </div>
+              </FormField>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                    {isAr ? 'رقم الهاتف' : 'Phone'}
-                  </label>
+                <FormField label={isAr ? 'رقم الهاتف' : 'Phone'} error={editErrors.phone}>
                   <input
                     type="text"
                     value={editFormData.phone}
-                    onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500 font-mono"
+                    onChange={(e) => {
+                      setEditFormData({ ...editFormData, phone: e.target.value });
+                      if (editErrors.phone) clearEditError('phone');
+                    }}
+                    placeholder="+201012345678"
+                    className={inputClass(!!editErrors.phone)}
                   />
-                </div>
+                </FormField>
 
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                    {isAr ? 'سنوات الخبرة' : 'Experience (Years)'}
-                  </label>
+                <FormField label={isAr ? 'سنوات الخبرة' : 'Experience (Years)'} error={editErrors.experienceYears} required>
                   <input
                     type="number"
-                    min={1}
+                    min={0}
                     value={editFormData.experienceYears}
-                    onChange={(e) =>
-                      setEditFormData({ ...editFormData, experienceYears: Number(e.target.value) })
-                    }
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500 font-mono"
+                    onChange={(e) => {
+                      setEditFormData({ ...editFormData, experienceYears: Number(e.target.value) });
+                      if (editErrors.experienceYears) clearEditError('experienceYears');
+                    }}
+                    className={inputClass(!!editErrors.experienceYears)}
                   />
-                </div>
+                </FormField>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                  {isAr ? 'التخصصات (مفصولة بفواصل)' : 'Specializations (comma separated)'}
-                </label>
+              <FormField label={isAr ? 'التخصصات (مفصولة بفواصل)' : 'Specializations (comma separated)'} error={editErrors.specializations} required>
                 <input
                   type="text"
-                  required
                   value={editFormData.specializations}
-                  onChange={(e) =>
-                    setEditFormData({ ...editFormData, specializations: e.target.value })
-                  }
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500"
+                  onChange={(e) => {
+                    setEditFormData({ ...editFormData, specializations: e.target.value });
+                    if (editErrors.specializations) clearEditError('specializations');
+                  }}
+                  placeholder={isAr ? 'التعليق الصوتي، الفوكاليز' : 'Voice-Over, Vocalise'}
+                  className={inputClass(!!editErrors.specializations)}
                 />
-              </div>
+              </FormField>
 
-              <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                  {isAr ? 'النبذة المهنية' : 'Professional Biography'}
-                </label>
+              <FormField label={isAr ? 'النبذة المهنية' : 'Professional Biography'} error={editErrors.bio} required>
                 <textarea
                   rows={3}
-                  required
                   value={editFormData.bio}
-                  onChange={(e) => setEditFormData({ ...editFormData, bio: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500 leading-relaxed"
+                  onChange={(e) => {
+                    setEditFormData({ ...editFormData, bio: e.target.value });
+                    if (editErrors.bio) clearEditError('bio');
+                  }}
+                  placeholder={isAr ? 'نبذة مختصرة عن الخبرات المهنية والأكاديمية...' : 'Brief biography...'}
+                  className={inputClass(!!editErrors.bio)}
                 />
-              </div>
+              </FormField>
 
               {/* Edit Avatar Image Upload to Supabase */}
               <div className="p-3.5 rounded-2xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 space-y-2.5 font-cairo">
@@ -887,65 +941,91 @@ export default function AdminInstructorsPage() {
                 </div>
               </div>
 
-              {/* Assigned Programs Selector in Edit Modal */}
+              {/* Assigned Programs Selector in Edit Modal (Filtered) */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 font-cairo">
-                    {isAr ? 'تعديل البرامج التدريبية المسندة للمحاضر (حصرياً):' : 'Assign Programs to Teach (Exclusive):'}
+                    {isAr ? 'تعديل البرامج التدريبية المسندة للمحاضر:' : 'Assign Programs to Teach:'}
                   </label>
                   <span className="text-[10px] text-gray-400 font-normal">
-                    {isAr ? '* البرنامج يدرسه مدرب واحد فقط' : '* 1 Instructor per program'}
+                    {isAr ? '* تظهر برامج هذا المدرب والبرامج غير المسندة فقط' : '* Only this instructor\'s or free programs'}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800">
-                  {allPrograms.map((prog) => {
-                    const checked = editFormData.assignedPrograms.includes(prog._id);
-                    const currentTeacher = instructors.find((inst) => {
-                      if (inst._id === selectedEditInstructor?._id || inst.userId?._id === selectedEditInstructor?.userId?._id) return false;
-                      const assigned = inst.instructorProfile?.assignedPrograms || [];
+
+                {(() => {
+                  const availableForEdit = allPrograms.filter((prog) => {
+                    // 1. Keep if it is already assigned to THIS instructor
+                    const isAssignedToThisInstructor = editFormData.assignedPrograms.includes(prog._id);
+                    if (isAssignedToThisInstructor) return true;
+
+                    // 2. Exclude if assigned to any other instructor
+                    const isAssignedToOther = instructors.some((inst) => {
+                      if (
+                        inst._id === selectedEditInstructor?._id ||
+                        inst.userId?._id === selectedEditInstructor?.userId?._id ||
+                        (inst.userId as any) === selectedEditInstructor?._id
+                      ) {
+                        return false;
+                      }
+                      const assigned = inst.instructorProfile?.assignedPrograms || (inst as any).assignedPrograms || [];
                       return assigned.some((p: any) => (typeof p === 'object' ? p._id : p) === prog._id);
                     });
-                    const currentTeacherName = currentTeacher?.fullName || currentTeacher?.userId?.fullName || currentTeacher?.user?.fullName;
 
+                    const isDirectOther =
+                      prog.instructorId &&
+                      prog.instructorId !== selectedEditInstructor?._id &&
+                      prog.instructorId !== selectedEditInstructor?.userId?._id;
+
+                    return !isAssignedToOther && !isDirectOther;
+                  });
+
+                  if (availableForEdit.length === 0) {
                     return (
-                      <label
-                        key={prog._id}
-                        className={`flex flex-col p-2.5 rounded-lg text-xs font-bold cursor-pointer transition-all ${
-                          checked
-                            ? 'bg-gold-500/20 text-gold-600 dark:text-gold-400 border border-gold-500/30'
-                            : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-850'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setEditFormData({
-                                  ...editFormData,
-                                  assignedPrograms: [...editFormData.assignedPrograms, prog._id],
-                                });
-                              } else {
-                                setEditFormData({
-                                  ...editFormData,
-                                  assignedPrograms: editFormData.assignedPrograms.filter((id) => id !== prog._id),
-                                });
-                              }
-                            }}
-                            className="rounded text-gold-500 focus:ring-gold-500"
-                          />
-                          <span className="truncate">{isAr ? prog.titleAr : prog.titleEn || prog.titleAr}</span>
-                        </div>
-                        {currentTeacherName && (
-                          <span className="text-[10px] text-amber-500 dark:text-amber-400 font-normal mt-1 ps-6 truncate">
-                            {isAr ? `(مسند حالياً لـ: ${currentTeacherName})` : `(Assigned to: ${currentTeacherName})`}
-                          </span>
-                        )}
-                      </label>
+                      <div className="p-4 rounded-xl bg-gray-50 dark:bg-navy-950 border border-dashed border-gray-200 dark:border-navy-800 text-center text-xs text-gray-500 dark:text-gray-400 font-cairo">
+                        <span>{isAr ? 'لا توجد برامج تدريبية متاحة للإسناد (كافة البرامج مسندة لمدربين بالفعل).' : 'No available programs to assign.'}</span>
+                      </div>
                     );
-                  })}
-                </div>
+                  }
+
+                  return (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800">
+                      {availableForEdit.map((prog) => {
+                        const checked = editFormData.assignedPrograms.includes(prog._id);
+
+                        return (
+                          <label
+                            key={prog._id}
+                            className={`flex items-center gap-2 p-2.5 rounded-lg text-xs font-bold cursor-pointer transition-all ${
+                              checked
+                                ? 'bg-gold-500/20 text-gold-600 dark:text-gold-400 border border-gold-500/30'
+                                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-850'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setEditFormData({
+                                    ...editFormData,
+                                    assignedPrograms: [...editFormData.assignedPrograms, prog._id],
+                                  });
+                                } else {
+                                  setEditFormData({
+                                    ...editFormData,
+                                    assignedPrograms: editFormData.assignedPrograms.filter((id) => id !== prog._id),
+                                  });
+                                }
+                              }}
+                              className="rounded text-gold-500 focus:ring-gold-500"
+                            />
+                            <span className="truncate">{isAr ? prog.titleAr : prog.titleEn || prog.titleAr}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-navy-800">
