@@ -3,14 +3,14 @@ import { Request, Response } from 'express';
 import { HTTP_STATUS } from '../constants/httpStatusCodes.js';
 import { ENV } from '../config/env.config.js';
 
-const isTest = ENV.NODE_ENV === 'test';
+const isDevOrTest = ENV.NODE_ENV === 'development' || ENV.NODE_ENV === 'test';
 
 export const globalRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: isTest ? 10000 : 300, // 300 in production, relaxed for tests
+  max: isDevOrTest ? 100000 : 1000,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => isTest,
+  skip: () => isDevOrTest,
   handler: (_req: Request, res: Response) => {
     res.status(HTTP_STATUS.TOO_MANY_REQUESTS).json({
       success: false,
@@ -24,10 +24,10 @@ export const globalRateLimiter = rateLimit({
 
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: isTest ? 10000 : 20, // 20 in production, relaxed for tests
+  max: isDevOrTest ? 100000 : 100,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => isTest,
+  skip: () => isDevOrTest,
   handler: (_req: Request, res: Response) => {
     res.status(HTTP_STATUS.TOO_MANY_REQUESTS).json({
       success: false,
@@ -41,10 +41,10 @@ export const authRateLimiter = rateLimit({
 
 export const sensitiveActionLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: isTest ? 10000 : 30, // 30 in production, relaxed for tests
+  max: isDevOrTest ? 100000 : 200,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => isTest,
+  skip: () => isDevOrTest,
   handler: (_req: Request, res: Response) => {
     res.status(HTTP_STATUS.TOO_MANY_REQUESTS).json({
       success: false,
