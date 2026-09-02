@@ -20,6 +20,9 @@ import {
   Trash2,
   Award,
   BookOpen,
+  Image as LucideImage,
+  Upload,
+  ImagePlus,
 } from 'lucide-react';
 
 interface InstructorItem {
@@ -131,6 +134,44 @@ export default function AdminInstructorsPage() {
 
   // Assigned Programs for Create Form
   const [createAssignedPrograms, setCreateAssignedPrograms] = useState<string[]>([]);
+  const [createAvatarUrl, setCreateAvatarUrl] = useState<string>('');
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+
+  // Helper to upload instructor avatar directly to Supabase Storage
+  const handleAvatarFileChange = async (file: File | null, callback: (url: string) => void) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error(isAr ? 'يرجى اختيار ملف صورة صالح (PNG, JPG, WebP)' : 'Please select a valid image file');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(isAr ? 'حجم الصورة كبير جداً (الحد الأقصى 5 ميجابايت)' : 'Image size must be less than 5MB');
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    const toastId = toast.loading(isAr ? 'جارٍ رفع الصورة إلى Supabase...' : 'Uploading avatar to Supabase...');
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const res: any = await api.post('/upload/image?folder=instructors', formData);
+      const publicUrl = res.data?.url || res.data?.image;
+
+      if (publicUrl) {
+        callback(publicUrl);
+        toast.success(isAr ? 'تم رفع وحفظ صورة المحاضر سحابياً بنجاح ☁️' : 'Avatar uploaded to Supabase successfully', { id: toastId });
+      } else {
+        throw new Error('No public URL returned');
+      }
+    } catch (err: any) {
+      console.error('Avatar Upload Error:', err);
+      toast.error(err.message || (isAr ? 'فشل الرفع السحابي' : 'Cloud upload failed'), { id: toastId });
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   // Create Form
   const {
@@ -156,6 +197,7 @@ export default function AdminInstructorsPage() {
   const [editFormData, setEditFormData] = useState<{
     fullName: string;
     phone: string;
+    avatarUrl: string;
     specializations: string;
     bio: string;
     experienceYears: number;
@@ -164,6 +206,7 @@ export default function AdminInstructorsPage() {
   }>({
     fullName: '',
     phone: '',
+    avatarUrl: '',
     specializations: '',
     bio: '',
     experienceYears: 10,
@@ -216,6 +259,7 @@ export default function AdminInstructorsPage() {
         trackId: data.trackId,
         specializations: specs,
         bio: data.bio,
+        avatarUrl: createAvatarUrl || undefined,
         assignedPrograms: createAssignedPrograms,
       });
 
@@ -223,6 +267,7 @@ export default function AdminInstructorsPage() {
       setIsCreateModalOpen(false);
       resetCreate();
       setCreateAssignedPrograms([]);
+      setCreateAvatarUrl('');
       fetchData();
     } catch (err: any) {
       toast.error(err.message || (isAr ? 'فشل إضافة المحاضر' : 'Failed to create instructor'));
@@ -234,6 +279,7 @@ export default function AdminInstructorsPage() {
     const rawName = inst.fullName || inst.userId?.fullName || inst.user?.fullName || '';
     const phone = inst.phone || inst.userId?.phone || inst.user?.phone || '';
     const bio = inst.bio || inst.instructorProfile?.bio || '';
+    const avatar = inst.avatarUrl || inst.userId?.avatarUrl || inst.user?.avatarUrl || '';
     const rawSpecs = inst.specializations || inst.instructorProfile?.specializations || [];
     const specsStr = Array.isArray(rawSpecs) ? rawSpecs.join('، ') : String(rawSpecs);
     const exp = inst.experienceYears || inst.instructorProfile?.experienceYears || 10;
@@ -249,6 +295,7 @@ export default function AdminInstructorsPage() {
     setEditFormData({
       fullName: rawName,
       phone,
+      avatarUrl: avatar,
       specializations: specsStr,
       bio,
       experienceYears: exp,
@@ -272,6 +319,7 @@ export default function AdminInstructorsPage() {
       await api.patch(`/instructors/${selectedEditInstructor._id}`, {
         fullName: editFormData.fullName,
         phone: editFormData.phone || undefined,
+        avatarUrl: editFormData.avatarUrl || undefined,
         specializations: specs,
         bio: editFormData.bio,
         experienceYears: Number(editFormData.experienceYears),
@@ -396,8 +444,16 @@ export default function AdminInstructorsPage() {
 
                 <div>
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="w-14 h-14 rounded-2xl bg-gold-500/10 border border-gold-500/30 flex items-center justify-center font-bold text-gold-600 dark:text-gold-400 text-lg shrink-0">
-                      {name.charAt(0) || 'Z'}
+                    <div className="w-14 h-14 rounded-2xl bg-gold-500/10 border border-gold-500/30 overflow-hidden flex items-center justify-center font-bold text-gold-600 dark:text-gold-400 text-lg shrink-0 shadow-sm">
+                      {inst.avatarUrl || inst.userId?.avatarUrl || inst.user?.avatarUrl ? (
+                        <img
+                          src={inst.avatarUrl || inst.userId?.avatarUrl || inst.user?.avatarUrl}
+                          alt={name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        name.charAt(0) || 'Z'
+                      )}
                     </div>
 
                     <div className="pr-12 rtl:pr-0 rtl:pl-12">
@@ -577,6 +633,49 @@ export default function AdminInstructorsPage() {
                 />
               </FormField>
 
+              {/* Avatar Image Upload to Supabase */}
+              <div className="p-3.5 rounded-2xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 space-y-2.5 font-cairo">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                    <LucideImage className="w-4 h-4 text-gold-500" />
+                    <span>{isAr ? 'الصورة الشخصية للمحاضر (تُرفع سحابياً على Supabase)' : 'Instructor Photo (Uploaded to Supabase)'}</span>
+                  </label>
+                  {createAvatarUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setCreateAvatarUrl('')}
+                      className="text-[11px] text-red-500 hover:underline font-bold"
+                    >
+                      {isAr ? 'إزالة الصورة' : 'Remove Photo'}
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3.5">
+                  <div className="w-14 h-14 rounded-2xl overflow-hidden bg-gray-100 dark:bg-navy-900 border border-gray-200 dark:border-navy-800 flex items-center justify-center shrink-0 shadow-inner">
+                    {createAvatarUrl ? (
+                      <img src={createAvatarUrl} alt="Avatar Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <ImagePlus className="w-6 h-6 text-gray-400" />
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="cursor-pointer px-3.5 py-1.5 rounded-xl bg-gold-500/10 hover:bg-gold-500/20 text-gold-600 dark:text-gold-400 border border-gold-500/30 text-xs font-bold transition-all flex items-center gap-1.5 w-fit">
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>{isAr ? 'رفع صورة من جهازك' : 'Upload from Device'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleAvatarFileChange(e.target.files?.[0] || null, setCreateAvatarUrl)}
+                      />
+                    </label>
+                    <span className="text-[10px] text-gray-400 block font-mono">PNG, JPG, WebP (Max 5MB)</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Assigned Programs Selector in Create Modal */}
               <div>
                 <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5 font-cairo">
@@ -721,6 +820,53 @@ export default function AdminInstructorsPage() {
                   onChange={(e) => setEditFormData({ ...editFormData, bio: e.target.value })}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500 leading-relaxed"
                 />
+              </div>
+
+              {/* Edit Avatar Image Upload to Supabase */}
+              <div className="p-3.5 rounded-2xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 space-y-2.5 font-cairo">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                    <LucideImage className="w-4 h-4 text-gold-500" />
+                    <span>{isAr ? 'الصورة الشخصية للمحاضر (Supabase Storage)' : 'Instructor Photo (Supabase Storage)'}</span>
+                  </label>
+                  {editFormData.avatarUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setEditFormData({ ...editFormData, avatarUrl: '' })}
+                      className="text-[11px] text-red-500 hover:underline font-bold"
+                    >
+                      {isAr ? 'إزالة الصورة' : 'Remove Photo'}
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3.5">
+                  <div className="w-14 h-14 rounded-2xl overflow-hidden bg-gray-100 dark:bg-navy-900 border border-gray-200 dark:border-navy-800 flex items-center justify-center shrink-0 shadow-inner">
+                    {editFormData.avatarUrl ? (
+                      <img src={editFormData.avatarUrl} alt="Avatar Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <ImagePlus className="w-6 h-6 text-gray-400" />
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="cursor-pointer px-3.5 py-1.5 rounded-xl bg-gold-500/10 hover:bg-gold-500/20 text-gold-600 dark:text-gold-400 border border-gold-500/30 text-xs font-bold transition-all flex items-center gap-1.5 w-fit">
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>{isAr ? 'رفع صورة جديدة من جهازك' : 'Upload from Device'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) =>
+                          handleAvatarFileChange(e.target.files?.[0] || null, (url) =>
+                            setEditFormData({ ...editFormData, avatarUrl: url })
+                          )
+                        }
+                      />
+                    </label>
+                    <span className="text-[10px] text-gray-400 block font-mono">PNG, JPG, WebP (Max 5MB)</span>
+                  </div>
+                </div>
               </div>
 
               {/* Assigned Programs Selector in Edit Modal */}
