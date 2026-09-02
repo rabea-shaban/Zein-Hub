@@ -17,6 +17,20 @@ router.get(
 
 // Admin / Assigned Instructor routes
 router.get(
+  '/session/:sessionId',
+  requireAuth,
+  requireRole(UserRole.SUPER_ADMIN, UserRole.INSTRUCTOR),
+  asyncHandler(AttendanceController.getSessionAttendance)
+);
+
+router.post(
+  '/session/:sessionId',
+  requireAuth,
+  requireRole(UserRole.SUPER_ADMIN, UserRole.INSTRUCTOR),
+  asyncHandler(AttendanceController.markAttendance)
+);
+
+router.get(
   '/program/:programId',
   requireAuth,
   requireRole(UserRole.SUPER_ADMIN, UserRole.INSTRUCTOR),
