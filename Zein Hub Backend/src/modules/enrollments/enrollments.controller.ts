@@ -36,6 +36,40 @@ export class EnrollmentsController {
     );
   };
 
+  public static enrollSelf = async (req: Request, res: Response): Promise<Response> => {
+    const studentId = req.user!.id;
+    const programId = req.params.programId as string;
+    const enrollment = await EnrollmentsService.createEnrollment(
+      studentId,
+      programId,
+      EnrollmentStatus.ACTIVE
+    );
+    return ApiResponse.send(
+      res,
+      HTTP_STATUS.CREATED,
+      'Enrolled in program successfully',
+      enrollment
+    );
+  };
+
+  public static adminCreateEnrollment = async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
+    const { studentId, programId, status } = req.body;
+    const enrollment = await EnrollmentsService.createEnrollment(
+      studentId,
+      programId,
+      status || EnrollmentStatus.ACTIVE
+    );
+    return ApiResponse.send(
+      res,
+      HTTP_STATUS.CREATED,
+      'Student enrolled in program successfully by Admin',
+      enrollment
+    );
+  };
+
   // Super Admin Controllers
   public static getAllAdmin = async (req: Request, res: Response): Promise<Response> => {
     const query = {

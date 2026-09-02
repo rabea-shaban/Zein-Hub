@@ -26,6 +26,13 @@ router.get(
   asyncHandler(EnrollmentsController.getMyEnrollmentForProgram)
 );
 
+router.post(
+  '/me/:programId',
+  requireAuth,
+  requireRole(UserRole.STUDENT),
+  asyncHandler(EnrollmentsController.enrollSelf)
+);
+
 // ==========================================
 // 2. Super Admin Management Routes
 // ==========================================
@@ -34,6 +41,13 @@ router.get(
   requireAuth,
   requireRole(UserRole.SUPER_ADMIN),
   asyncHandler(EnrollmentsController.getAllAdmin)
+);
+
+router.post(
+  '/admin/enroll',
+  requireAuth,
+  requireRole(UserRole.SUPER_ADMIN),
+  asyncHandler(EnrollmentsController.adminCreateEnrollment)
 );
 
 router.patch(

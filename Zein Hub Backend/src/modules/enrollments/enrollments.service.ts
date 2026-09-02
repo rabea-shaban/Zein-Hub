@@ -179,18 +179,50 @@ export class EnrollmentsService {
   }
 
   /**
-   * Super Admin: Completely delete student user and related records
+   * Create or register new enrollment (Allows student to enroll in multiple courses, and course to have multiple students)
    */
-  public static async deleteStudentUser(studentId: string): Promise<void> {
-    if (!mongoose.Types.ObjectId.isValid(studentId)) {
-      throw ApiError.badRequest('Invalid student ID format');
+  public static async createEnrollment(
+    studentId: string,
+    programId: string,
+    status: EnrollmentStatus = EnrollmentStatus.ACTIVE
+  ): Promise<IEnrollment> {
+    if (!mongoose.Types.ObjectId.isValid(studentId) || !mongoose.Types.ObjectId.isValid(programId)) {
+      throw ApiError.badRequest('Invalid student ID or program ID format');
     }
-    await Enrollment.deleteMany({ studentId });
-    await Progress.deleteMany({ studentId });
-    await Application.deleteMany({ studentId });
-    const user = await User.findByIdAndDelete(studentId);
-    if (!user) {
-      throw ApiError.notFound('Student account not found');
+
+    const existing = await Enrollment.findOne({ studentId, programId });
+    if (existing) {
+      throw ApiError.conflict('Student is already actively enrolled in this program');
     }
+
+    const enrollment = new Enrollment({
+      studentId: new mongoose.Types.ObjectId(studentId),
+      programId: new mongoose.Types.ObjectId(programId),
+      status,
+      enrolledAt: new Date(),
+    });
+
+    await enrollment.save();
+
+    // Initialize Progress record
+    await Progress.findOneAndUpdate(
+      { studentId: new mongoose.Types.ObjectId(studentId), programId: new mongoose.Types.ObjectId(programId) },
+      {
+        $setOnInsert: {
+          studentId: new mongoose.Types.ObjectId(studentId),
+          programId: new mongoose.Types.ObjectId(programId),
+          completedLessons: [],
+          completionPercentage: 0,
+          lastActivityAt: new Date(),
+        },
+      },
+      { upsert: true, new: true }
+    );
+
+    const populated = await Enrollment.findById(enrollment._id)
+      .populate('studentId', 'fullName email phone avatarUrl')
+      .populate('programId', 'titleAr titleEn slug coverImageUrl price durationWeeks');
+
+    return populated || enrollment;
   }
 }

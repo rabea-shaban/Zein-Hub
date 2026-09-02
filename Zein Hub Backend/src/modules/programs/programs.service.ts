@@ -368,7 +368,19 @@ export class ProgramsService {
       );
     }
 
-    // Strict Check 2: Find or initialize InstructorProfile
+    // Strict Check 2: Remove program from previous instructor if exists
+    if (program.instructorId && program.instructorId.toString() !== user._id.toString()) {
+      await InstructorProfile.findOneAndUpdate(
+        { userId: program.instructorId },
+        { $pull: { assignedPrograms: program._id } }
+      );
+    }
+
+    // Set single instructor on program
+    program.instructorId = user._id as any;
+    await program.save();
+
+    // Strict Check 3: Find or initialize InstructorProfile and add program
     let instructorProfile = await InstructorProfile.findOne({ userId: user._id });
     if (!instructorProfile) {
       instructorProfile = new InstructorProfile({
@@ -411,6 +423,12 @@ export class ProgramsService {
   public static async unassignInstructor(programId: string, instructorUserId: string): Promise<any> {
     if (!mongoose.Types.ObjectId.isValid(programId) || !mongoose.Types.ObjectId.isValid(instructorUserId)) {
       throw ApiError.badRequest('Invalid Program ID or Instructor ID format');
+    }
+
+    const program = await Program.findById(programId);
+    if (program && program.instructorId?.toString() === instructorUserId) {
+      program.instructorId = undefined;
+      await program.save();
     }
 
     const instructorProfile = await InstructorProfile.findOne({ userId: instructorUserId });
