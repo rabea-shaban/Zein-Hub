@@ -69,6 +69,9 @@ export const createProgramSchema = z.object({
   price: z
     .number()
     .min(0, 'الرسوم التدريبية لا يمكن أن تكون قيمة سالبة'),
+  coverImageUrl: z
+    .string()
+    .optional(),
 });
 
 export type CreateProgramFormData = z.infer<typeof createProgramSchema>;

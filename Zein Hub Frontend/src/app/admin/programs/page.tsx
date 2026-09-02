@@ -30,6 +30,9 @@ import {
   Wrench,
   GraduationCap,
   Plus,
+  Image as LucideImage,
+  Upload,
+  ImagePlus,
 } from 'lucide-react';
 
 interface ProgramItem {
@@ -131,6 +134,37 @@ export default function AdminProgramsPage() {
 
   // Selected Instructor for Create Form
   const [createInstructorId, setCreateInstructorId] = useState<string>('');
+  // Cover Image for Create Form
+  const [createCoverImage, setCreateCoverImage] = useState<string>('');
+
+  // Preset High Quality Studio Images for Quick Selection
+  const PRESET_STUDIO_IMAGES = [
+    { label: '🎙️ استوديو صوتي وإذاعي', url: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=800&q=80' },
+    { label: '📺 استوديو تلفزيون وكاميرات', url: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80' },
+    { label: '🤖 استوديو بودكاست وAI', url: 'https://images.unsplash.com/photo-1589903102059-24142e7a2a7a?auto=format&fit=crop&w=800&q=80' },
+    { label: '🏢 إدارة إعلامية وعلاقات عامة', url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80' },
+  ];
+
+  // Helper to handle local image file upload & convert to Data URL
+  const handleImageFileChange = (file: File | null, callback: (url: string) => void) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error(isAr ? 'يرجى اختيار ملف صورة صالح (PNG, JPG, WebP)' : 'Please select a valid image file');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(isAr ? 'حجم الصورة كبير جداً (الحد الأقصى 5 ميجابايت)' : 'Image size must be less than 5MB');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        callback(reader.result);
+        toast.success(isAr ? 'تم تحميل ومعاينة الصورة بنجاح' : 'Image loaded successfully');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Active Tab in Edit Modal
   const [editTab, setEditTab] = useState<'basic' | 'outcomes' | 'curriculum' | 'capstone'>('basic');
@@ -168,6 +202,7 @@ export default function AdminProgramsPage() {
     titleEn: string;
     slug: string;
     trackId: string;
+    coverImageUrl: string;
     descriptionAr: string;
     descriptionEn: string;
     durationHours: number;
@@ -195,6 +230,7 @@ export default function AdminProgramsPage() {
     titleEn: '',
     slug: '',
     trackId: '',
+    coverImageUrl: '',
     descriptionAr: '',
     descriptionEn: '',
     durationHours: 30,
@@ -281,12 +317,14 @@ export default function AdminProgramsPage() {
     try {
       await api.post('/programs', {
         ...data,
+        coverImageUrl: createCoverImage || undefined,
         instructorId: createInstructorId || undefined,
       });
       toast.success(isAr ? 'تم إنشاء ونشر البرنامج التدريبي بنجاح' : 'Program created successfully');
       setIsCreateModalOpen(false);
       resetCreate();
       setCreateInstructorId('');
+      setCreateCoverImage('');
       fetchData();
     } catch (err: any) {
       toast.error(err.message || (isAr ? 'فشل إنشاء البرنامج التدريبي' : 'Failed to create program'));
@@ -329,6 +367,7 @@ export default function AdminProgramsPage() {
       slug: prog.slug || '',
       trackId: typeof tr === 'object' ? tr?._id || tracks[0]?._id : String(tr || tracks[0]?._id || ''),
       instructorId: instId,
+      coverImageUrl: prog.coverImageUrl || '',
       descriptionAr: prog.descriptionAr || '',
       descriptionEn: prog.descriptionEn || '',
       durationHours: prog.durationHours || 30,
@@ -402,6 +441,7 @@ export default function AdminProgramsPage() {
         slug: editFormData.slug,
         trackId: editFormData.trackId,
         instructorId: editFormData.instructorId || undefined,
+        coverImageUrl: editFormData.coverImageUrl || undefined,
         descriptionAr: editFormData.descriptionAr,
         descriptionEn: editFormData.descriptionEn,
         durationHours: Number(editFormData.durationHours),
@@ -579,10 +619,27 @@ export default function AdminProgramsPage() {
                       className="hover:bg-gray-50/50 dark:hover:bg-navy-850/40 transition-colors"
                     >
                       <td className="py-4 px-4">
-                        <div className="font-bold text-navy-900 dark:text-white font-cairo">
-                          {isAr ? prog.titleAr : prog.titleEn || prog.titleAr}
+                        <div className="flex items-center gap-3">
+                          <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-gray-100 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 shrink-0 shadow-sm">
+                            {prog.coverImageUrl ? (
+                              <img
+                                src={prog.coverImageUrl}
+                                alt={prog.titleAr}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50 dark:bg-navy-900">
+                                <LucideImage className="w-5 h-5 text-gray-400" />
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <div className="font-bold text-navy-900 dark:text-white font-cairo">
+                              {isAr ? prog.titleAr : prog.titleEn || prog.titleAr}
+                            </div>
+                            <div className="text-xs text-gray-400 font-mono">{prog.slug}</div>
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-400 font-mono">{prog.slug}</div>
                       </td>
 
                       <td className="py-4 px-4 font-semibold text-xs text-gold-600 dark:text-gold-400 font-cairo">
@@ -850,6 +907,91 @@ export default function AdminProgramsPage() {
                 </FormField>
               </div>
 
+              {/* Cover Image Upload & Presets */}
+              <div className="p-4 rounded-2xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 space-y-3 font-cairo">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                    <LucideImage className="w-4 h-4 text-gold-500" />
+                    <span>{isAr ? 'صورة الغلاف الرسمية للبرنامج' : 'Program Cover Image'}</span>
+                  </label>
+                  {createCoverImage && (
+                    <button
+                      type="button"
+                      onClick={() => setCreateCoverImage('')}
+                      className="text-[11px] text-red-500 hover:underline font-bold"
+                    >
+                      {isAr ? 'إزالة الصورة' : 'Remove Image'}
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
+                  <div>
+                    <input
+                      type="text"
+                      value={createCoverImage}
+                      onChange={(e) => setCreateCoverImage(e.target.value)}
+                      placeholder={isAr ? 'أدخل رابط الصورة المباشر (URL)...' : 'Paste Image URL...'}
+                      className="w-full px-3 py-2 rounded-xl bg-white dark:bg-navy-900 border border-gray-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500 font-mono"
+                    />
+
+                    {/* Local File Upload Button */}
+                    <div className="mt-2 flex items-center gap-2">
+                      <label className="cursor-pointer px-3 py-1.5 rounded-xl bg-gold-500/10 hover:bg-gold-500/20 text-gold-600 dark:text-gold-400 border border-gold-500/30 text-xs font-bold transition-all flex items-center gap-1.5 w-fit">
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>{isAr ? 'رفع صورة من جهازك' : 'Upload from Device'}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleImageFileChange(e.target.files?.[0] || null, setCreateCoverImage)}
+                        />
+                      </label>
+                      <span className="text-[10px] text-gray-400">PNG, JPG, WebP</span>
+                    </div>
+                  </div>
+
+                  {/* Live Preview / Preset Thumbnail */}
+                  <div className="relative aspect-[16/9] rounded-xl overflow-hidden bg-gray-100 dark:bg-navy-900 border border-gray-200 dark:border-navy-800 flex items-center justify-center">
+                    {createCoverImage ? (
+                      <img
+                        src={createCoverImage}
+                        alt="Cover Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center text-gray-400 text-xs text-center p-2">
+                        <ImagePlus className="w-6 h-6 mb-1 text-gray-400" />
+                        <span>{isAr ? 'معاينة الغلاف' : 'No Cover Selected'}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Quick Presets */}
+                <div>
+                  <span className="text-[10px] text-gray-400 block mb-1.5 font-bold">
+                    {isAr ? 'أو اختر من صور الاستوديوهات الجاهزة:' : 'Or choose a studio preset:'}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {PRESET_STUDIO_IMAGES.map((preset, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setCreateCoverImage(preset.url)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all ${
+                          createCoverImage === preset.url
+                            ? 'bg-gold-500 text-navy-950 border-gold-500 shadow-sm'
+                            : 'bg-white dark:bg-navy-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-navy-800 hover:border-gold-500'
+                        }`}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-navy-800">
                 <button
                   type="button"
@@ -877,6 +1019,15 @@ export default function AdminProgramsPage() {
       {selectedViewProgram && (
         <div className="fixed inset-0 z-50 bg-navy-950/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-navy-900 border border-gray-200 dark:border-navy-800 rounded-3xl max-w-xl w-full p-6 md:p-8 shadow-2xl text-start max-h-[90vh] overflow-y-auto font-cairo space-y-6">
+            {selectedViewProgram.coverImageUrl && (
+              <div className="relative aspect-[16/7] w-full rounded-2xl overflow-hidden border border-gray-200 dark:border-navy-800 shadow-md">
+                <img
+                  src={selectedViewProgram.coverImageUrl}
+                  alt={selectedViewProgram.titleAr}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
             <div className="flex items-start justify-between">
               <div>
                 <span className="px-3 py-1 rounded-lg bg-gold-500/10 text-gold-600 dark:text-gold-400 text-xs font-bold border border-gold-500/20 font-mono">
@@ -1145,6 +1296,95 @@ export default function AdminProgramsPage() {
                         }
                         className="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500 font-mono"
                       />
+                    </div>
+                  </div>
+
+                  {/* Edit Cover Image Upload & Presets */}
+                  <div className="p-4 rounded-2xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800 space-y-3 font-cairo">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                        <LucideImage className="w-4 h-4 text-gold-500" />
+                        <span>{isAr ? 'صورة الغلاف الرسمية للبرنامج' : 'Program Cover Image'}</span>
+                      </label>
+                      {editFormData.coverImageUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setEditFormData({ ...editFormData, coverImageUrl: '' })}
+                          className="text-[11px] text-red-500 hover:underline font-bold"
+                        >
+                          {isAr ? 'إزالة الصورة' : 'Remove Image'}
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
+                      <div>
+                        <input
+                          type="text"
+                          value={editFormData.coverImageUrl}
+                          onChange={(e) => setEditFormData({ ...editFormData, coverImageUrl: e.target.value })}
+                          placeholder={isAr ? 'أدخل رابط الصورة المباشر (URL)...' : 'Paste Image URL...'}
+                          className="w-full px-3 py-2 rounded-xl bg-white dark:bg-navy-900 border border-gray-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500 font-mono"
+                        />
+
+                        {/* Local File Upload Button */}
+                        <div className="mt-2 flex items-center gap-2">
+                          <label className="cursor-pointer px-3 py-1.5 rounded-xl bg-gold-500/10 hover:bg-gold-500/20 text-gold-600 dark:text-gold-400 border border-gold-500/30 text-xs font-bold transition-all flex items-center gap-1.5 w-fit">
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>{isAr ? 'رفع صورة جديدة من جهازك' : 'Upload from Device'}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) =>
+                                handleImageFileChange(e.target.files?.[0] || null, (url) =>
+                                  setEditFormData({ ...editFormData, coverImageUrl: url })
+                                )
+                              }
+                            />
+                          </label>
+                          <span className="text-[10px] text-gray-400">PNG, JPG, WebP</span>
+                        </div>
+                      </div>
+
+                      {/* Live Preview */}
+                      <div className="relative aspect-[16/9] rounded-xl overflow-hidden bg-gray-100 dark:bg-navy-900 border border-gray-200 dark:border-navy-800 flex items-center justify-center shadow-inner">
+                        {editFormData.coverImageUrl ? (
+                          <img
+                            src={editFormData.coverImageUrl}
+                            alt="Cover Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center text-gray-400 text-xs text-center p-2">
+                            <ImagePlus className="w-6 h-6 mb-1 text-gray-400" />
+                            <span>{isAr ? 'معاينة الغلاف' : 'No Cover Selected'}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Quick Presets */}
+                    <div>
+                      <span className="text-[10px] text-gray-400 block mb-1.5 font-bold">
+                        {isAr ? 'أو اختر من صور الاستوديوهات الجاهزة:' : 'Or choose a studio preset:'}
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {PRESET_STUDIO_IMAGES.map((preset, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setEditFormData({ ...editFormData, coverImageUrl: preset.url })}
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all ${
+                              editFormData.coverImageUrl === preset.url
+                                ? 'bg-gold-500 text-navy-950 border-gold-500 shadow-sm'
+                                : 'bg-white dark:bg-navy-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-navy-800 hover:border-gold-500'
+                            }`}
+                          >
+                            {preset.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
