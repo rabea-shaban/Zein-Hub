@@ -10,7 +10,7 @@ export const accessTokenCookieOptions: CookieOptions = {
   httpOnly: true,
   secure: isProduction,
   sameSite: isProduction ? 'strict' : 'lax',
-  maxAge: 15 * 60 * 1000, // 15 minutes
+  maxAge: isProduction ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // 1 hour in prod, 24 hours in dev
   path: '/',
 };
 

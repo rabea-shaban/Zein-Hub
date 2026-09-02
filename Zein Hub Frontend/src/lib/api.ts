@@ -79,8 +79,32 @@ async function request<T = any>(endpoint: string, options: RequestOptions = {}):
   };
 
   try {
-    const response = await fetch(url, config);
+    let response = await fetch(url, config);
     let result: any = null;
+
+    // Automatic silent refresh on 401 Unauthorized
+    const isAuthEndpoint =
+      endpoint.includes('/auth/login') ||
+      endpoint.includes('/auth/register') ||
+      endpoint.includes('/auth/refresh-token') ||
+      endpoint.includes('/auth/logout');
+
+    if (response.status === 401 && !isAuthEndpoint) {
+      try {
+        const refreshRes = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          credentials: 'include',
+        });
+
+        if (refreshRes.ok) {
+          // Retry the original request
+          response = await fetch(url, config);
+        }
+      } catch (refreshErr) {
+        console.warn('Auto refresh failed:', refreshErr);
+      }
+    }
 
     const contentType = response.headers.get('content-type');
     if (contentType && contentType.includes('application/json')) {
