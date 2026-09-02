@@ -121,7 +121,28 @@ export function mapBackendProgramToFrontend(raw: any, fallbackPrograms: Program[
       "Master hands-on practical industry techniques",
       "Produce a certified portfolio capstone project",
     ],
-    curriculum: Array.isArray(raw.curriculum) ? raw.curriculum : [],
+    curriculum: (() => {
+      if (Array.isArray(raw.modules) && raw.modules.length > 0) {
+        return raw.modules.map((m: any, idx: number) => {
+          const lessons = Array.isArray(m.lessons) ? m.lessons : [];
+          const topicsAr = lessons.map((l: any) => l.titleAr || l.title || 'محاضرة تدريبية');
+          const topicsEn = lessons.map((l: any) => l.titleEn || l.title || 'Training Lesson');
+
+          return {
+            weekNumber: m.weekNumber || m.order || idx + 1,
+            title: m.titleAr || m.title || `الوحدة التدريبية 0${idx + 1}`,
+            titleEn: m.titleEn || m.title || `Module 0${idx + 1}`,
+            description: m.descriptionAr || m.description || 'جلسات وتطبيقات عملية داخل استوديوهات Zein Hub بصعيد مصر.',
+            descriptionEn: m.descriptionEn || m.description || 'Practical studio sessions at Zein Hub Studios Upper Egypt.',
+            topics: topicsAr.length > 0 ? topicsAr : (m.topics || []),
+            topicsEn: topicsEn.length > 0 ? topicsEn : (m.topicsEn || []),
+            practicalProject: m.practicalProject || (lessons.length > 0 ? `تطبيق عملي: ${lessons[0].title}` : undefined),
+            practicalProjectEn: m.practicalProjectEn || (lessons.length > 0 ? `Practical Project: ${lessons[0].title}` : undefined),
+          };
+        });
+      }
+      return Array.isArray(raw.curriculum) && raw.curriculum.length > 0 ? raw.curriculum : [];
+    })(),
     toolsAndGear: raw.toolsAndGear || matchFallback?.toolsAndGear || ["استوديوهات Zein Hub الصوتية والمرئية", "البرمجيات والأجهزة الاحترافية"],
     toolsAndGearEn: raw.toolsAndGearEn || matchFallback?.toolsAndGearEn || ["Zein Hub Media Studios", "Industry-Grade Gear & Software"],
     capstoneProject: raw.capstoneProject || matchFallback?.capstoneProject || {

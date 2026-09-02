@@ -7,6 +7,7 @@ import { InstructorProfile } from '../../models/instructorProfile.model.js';
 import { UserRole } from '../../constants/roles.enum.js';
 import { ProgramStatus } from '../../constants/programStatus.enum.js';
 import { ApiError } from '../../utils/apiError.js';
+import { CourseModulesService } from '../courseModules/courseModules.service.js';
 import {
   ICreateProgramDTO,
   IUpdateProgramDTO,
@@ -166,12 +167,22 @@ export class ProgramsService {
       programId: program._id,
     });
 
+    // Fetch live modules and lessons created by the assigned instructor
+    let modules: any[] = [];
+    try {
+      modules = await CourseModulesService.getProgramModules(program._id.toString());
+    } catch (e) {
+      console.warn('Failed to load live modules for program:', e);
+    }
+
     return {
       program: {
         ...program.toObject(),
         studentsCount,
+        modules,
       },
       instructors,
+      modules,
     };
   }
 
