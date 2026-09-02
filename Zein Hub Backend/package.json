@@ -20,6 +20,8 @@
   "author": "Zein Hub Team",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.113.0",
+    "@types/multer": "^2.2.0",
     "bcryptjs": "^3.0.3",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
@@ -33,6 +35,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.4",
     "morgan": "^1.12.0",
+    "multer": "^2.3.0",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1"
   },

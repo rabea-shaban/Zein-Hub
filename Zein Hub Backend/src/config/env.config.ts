@@ -20,4 +20,10 @@ export const ENV = {
   SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL || 'admin@zeinhub.com',
   SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD || 'Admin@ZeinHub2026!',
   SUPER_ADMIN_PHONE: process.env.SUPER_ADMIN_PHONE || '01000000000',
+
+  // Supabase Storage Configuration
+  SUPABASE_URL: process.env.SUPABASE_URL || 'https://ikybhvfvwvsimmskgxgl.supabase.co',
+  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+  SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY || '',
+  SUPABASE_BUCKET: process.env.SUPABASE_BUCKET || 'zein-hub-images',
 };

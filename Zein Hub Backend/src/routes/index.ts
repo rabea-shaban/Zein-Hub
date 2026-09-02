@@ -18,6 +18,7 @@ import attendanceRoutes from '../modules/attendance/attendance.routes.js';
 import reviewsRoutes from '../modules/reviews/reviews.routes.js';
 import analyticsRoutes from '../modules/analytics/analytics.routes.js';
 import contactRoutes from '../modules/contact/contact.routes.js';
+import uploadRoutes from '../modules/upload/upload.routes.js';
 
 const router = Router();
 
@@ -43,5 +44,6 @@ router.use('/attendance', attendanceRoutes);
 router.use('/reviews', reviewsRoutes);
 router.use('/admin', analyticsRoutes);
 router.use('/contact', contactRoutes);
+router.use('/upload', uploadRoutes);
 
 export default router;

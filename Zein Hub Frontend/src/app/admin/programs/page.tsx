@@ -145,8 +145,10 @@ export default function AdminProgramsPage() {
     { label: '🏢 إدارة إعلامية وعلاقات عامة', url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80' },
   ];
 
-  // Helper to handle local image file upload & convert to Data URL
-  const handleImageFileChange = (file: File | null, callback: (url: string) => void) => {
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  // Helper to upload image directly to Supabase Storage via backend API
+  const handleImageFileChange = async (file: File | null, callback: (url: string) => void) => {
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       toast.error(isAr ? 'يرجى اختيار ملف صورة صالح (PNG, JPG, WebP)' : 'Please select a valid image file');
@@ -156,14 +158,37 @@ export default function AdminProgramsPage() {
       toast.error(isAr ? 'حجم الصورة كبير جداً (الحد الأقصى 5 ميجابايت)' : 'Image size must be less than 5MB');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        callback(reader.result);
-        toast.success(isAr ? 'تم تحميل ومعاينة الصورة بنجاح' : 'Image loaded successfully');
+
+    setIsUploadingImage(true);
+    const toastId = toast.loading(isAr ? 'جارٍ رفع الصورة إلى السحابة (Supabase Storage)...' : 'Uploading image to Supabase Storage...');
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const res: any = await api.post('/upload/image', formData);
+      const publicUrl = res.data?.url || res.data?.image;
+
+      if (publicUrl) {
+        callback(publicUrl);
+        toast.success(isAr ? 'تم رفع وحفظ الصورة سحابياً بنجاح ☁️' : 'Image uploaded to Supabase Storage successfully', { id: toastId });
+      } else {
+        throw new Error('No public URL returned');
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (err: any) {
+      console.error('Upload Error:', err);
+      // Fallback to local Data URL if server upload fails
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          callback(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+      toast.error(err.message || (isAr ? 'فشل الرفع السحابي، تم استخدام المعاينة المحلية' : 'Cloud upload failed, using local preview'), { id: toastId });
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   // Active Tab in Edit Modal
