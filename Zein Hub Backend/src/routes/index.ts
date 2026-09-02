@@ -38,6 +38,7 @@ router.use('/submissions', submissionsRoutes);
 router.use('/progress', progressRoutes);
 router.use('/certificates', certificatesRoutes);
 router.use('/sessions', liveSessionsRoutes);
+router.use('/live-sessions', liveSessionsRoutes);
 router.use('/attendance', attendanceRoutes);
 router.use('/reviews', reviewsRoutes);
 router.use('/admin', analyticsRoutes);
