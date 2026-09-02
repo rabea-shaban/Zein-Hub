@@ -8,7 +8,7 @@ export class UploadController {
   static async uploadImage(req: Request, res: Response) {
     const file = req.file;
     if (!file) {
-      throw new ApiError('Image file is required (field name: image or file)', HTTP_STATUS.BAD_REQUEST);
+      throw new ApiError(HTTP_STATUS.BAD_REQUEST, 'Image file is required (field name: image or file)');
     }
 
     const folder = (req.query.folder as string) || (req.body.folder as string) || 'programs';
@@ -32,7 +32,7 @@ export class UploadController {
   static async deleteImage(req: Request, res: Response) {
     const path = (req.body.path as string) || (req.query.path as string);
     if (!path) {
-      throw new ApiError('File path is required to delete', HTTP_STATUS.BAD_REQUEST);
+      throw new ApiError(HTTP_STATUS.BAD_REQUEST, 'File path is required to delete');
     }
 
     const deleted = await StorageService.deleteFile(path);

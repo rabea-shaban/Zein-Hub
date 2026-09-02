@@ -9,7 +9,7 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ): void => {
-  let statusCode = err.statusCode || HTTP_STATUS.INTERNAL_SERVER_ERROR;
+  let statusCode = typeof err.statusCode === 'number' ? err.statusCode : HTTP_STATUS.INTERNAL_SERVER_ERROR;
   let errorCode = err.errorCode || 'INTERNAL_ERROR';
   let message = err.message || 'Internal server error';
   let errors = err.errors || [];

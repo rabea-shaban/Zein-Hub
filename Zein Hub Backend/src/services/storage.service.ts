@@ -20,7 +20,7 @@ export class StorageService {
    */
   static async uploadImage(file: Express.Multer.File, folder = 'programs'): Promise<UploadResult> {
     if (!file || !file.buffer) {
-      throw new ApiError('No file buffer provided for upload', HTTP_STATUS.BAD_REQUEST);
+      throw new ApiError(HTTP_STATUS.BAD_REQUEST, 'No file buffer provided for upload');
     }
 
     const extension = file.originalname.split('.').pop() || 'webp';
@@ -39,7 +39,7 @@ export class StorageService {
 
     if (error) {
       console.error('[StorageService] Supabase Upload Error:', error);
-      throw new ApiError(`Supabase Storage Upload failed: ${error.message}`, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+      throw new ApiError(HTTP_STATUS.INTERNAL_SERVER_ERROR, `Supabase Storage Upload failed: ${error.message}`);
     }
 
     // Get Public URL

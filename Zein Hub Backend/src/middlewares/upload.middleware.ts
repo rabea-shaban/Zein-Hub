@@ -23,9 +23,8 @@ const fileFilter = (
   } else {
     cb(
       new ApiError(
-        'Invalid file type. Only JPG, PNG, WEBP, GIF, and SVG images are allowed.',
         HTTP_STATUS.BAD_REQUEST,
-        'INVALID_FILE_TYPE'
+        'Invalid file type. Only JPG, PNG, WEBP, GIF, and SVG images are allowed.'
       )
     );
   }

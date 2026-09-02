@@ -51,15 +51,29 @@ async function request<T = any>(endpoint: string, options: RequestOptions = {}):
     }
   }
 
-  const defaultHeaders: HeadersInit = {
-    'Content-Type': 'application/json',
+  const isFormData = typeof FormData !== 'undefined' && customConfig.body instanceof FormData;
+
+  const defaultHeaders: Record<string, string> = {
     Accept: 'application/json',
-    ...headers,
   };
+
+  if (!isFormData) {
+    defaultHeaders['Content-Type'] = 'application/json';
+  }
+
+  const mergedHeaders = {
+    ...defaultHeaders,
+    ...(headers as Record<string, string>),
+  };
+
+  // If body is FormData, delete Content-Type to let the browser set boundary
+  if (isFormData && mergedHeaders['Content-Type']) {
+    delete mergedHeaders['Content-Type'];
+  }
 
   const config: RequestInit = {
     method: 'GET',
-    headers: defaultHeaders,
+    headers: mergedHeaders,
     credentials: 'include', // Crucial: Automatically includes and receives httpOnly cookies (zh_access_token, zh_refresh_token)
     ...customConfig,
   };
@@ -99,6 +113,12 @@ async function request<T = any>(endpoint: string, options: RequestOptions = {}):
   }
 }
 
+const prepareBody = (body: any) => {
+  if (body === undefined || body === null) return undefined;
+  if (typeof FormData !== 'undefined' && body instanceof FormData) return body;
+  return JSON.stringify(body);
+};
+
 export const api = {
   get: <T = any>(endpoint: string, options?: RequestOptions) =>
     request<T>(endpoint, { ...options, method: 'GET' }),
@@ -107,23 +127,30 @@ export const api = {
     request<T>(endpoint, {
       ...options,
       method: 'POST',
-      body: body ? JSON.stringify(body) : undefined,
+      body: prepareBody(body),
     }),
 
   patch: <T = any>(endpoint: string, body?: any, options?: RequestOptions) =>
     request<T>(endpoint, {
       ...options,
       method: 'PATCH',
-      body: body ? JSON.stringify(body) : undefined,
+      body: prepareBody(body),
     }),
 
   put: <T = any>(endpoint: string, body?: any, options?: RequestOptions) =>
     request<T>(endpoint, {
       ...options,
       method: 'PUT',
-      body: body ? JSON.stringify(body) : undefined,
+      body: prepareBody(body),
     }),
 
   delete: <T = any>(endpoint: string, options?: RequestOptions) =>
     request<T>(endpoint, { ...options, method: 'DELETE' }),
+
+  upload: <T = any>(endpoint: string, formData: FormData, options?: RequestOptions) =>
+    request<T>(endpoint, {
+      ...options,
+      method: 'POST',
+      body: formData,
+    }),
 };
