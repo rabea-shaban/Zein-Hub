@@ -72,6 +72,23 @@ export class ProgramsController {
     );
   };
 
+  public static updateCapstoneProject = async (req: Request, res: Response): Promise<Response> => {
+    const id = req.params.id as string;
+    const user = req.user!;
+    const program = await ProgramsService.updateCapstoneProject(
+      id,
+      req.body,
+      user.id,
+      user.role
+    );
+    return ApiResponse.send(
+      res,
+      HTTP_STATUS.OK,
+      'Capstone project updated successfully',
+      program
+    );
+  };
+
   public static changeStatus = async (req: Request, res: Response): Promise<Response> => {
     const id = req.params.id as string;
     const program = await ProgramsService.changeStatus(id, req.body.status);

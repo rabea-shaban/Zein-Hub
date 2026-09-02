@@ -319,6 +319,46 @@ export class ProgramsService {
   }
 
   /**
+   * Update Program Capstone Project (Assigned Instructor or Super Admin)
+   */
+  public static async updateCapstoneProject(
+    programId: string,
+    capstoneData: {
+      title: string;
+      titleEn?: string;
+      description: string;
+      descriptionEn?: string;
+      deliverable: string;
+      deliverableEn?: string;
+    },
+    userId: string,
+    userRole: UserRole
+  ): Promise<IProgram> {
+    if (!mongoose.Types.ObjectId.isValid(programId)) {
+      throw ApiError.badRequest('Invalid program ID format');
+    }
+
+    await CourseModulesService.verifyProgramWriteAccess(userId, userRole, programId);
+
+    const program = await Program.findById(programId);
+    if (!program) {
+      throw ApiError.notFound('Program not found');
+    }
+
+    program.capstoneProject = {
+      title: capstoneData.title?.trim() || 'مشروع التخرج المعتمد',
+      titleEn: capstoneData.titleEn?.trim() || 'Certified Capstone Project',
+      description: capstoneData.description?.trim() || 'إنتاج وتطبيق عملي متكامل جاهز للمعاينة والبث المباشر.',
+      descriptionEn: capstoneData.descriptionEn?.trim() || 'Comprehensive practical capstone project ready for industry evaluation.',
+      deliverable: capstoneData.deliverable?.trim() || 'ملف وبورتفوليو رقمي متكامل معتمد',
+      deliverableEn: capstoneData.deliverableEn?.trim() || 'Complete certified digital portfolio deliverable',
+    };
+
+    await program.save();
+    return program;
+  }
+
+  /**
    * Change program status (open, coming-soon, closed)
    */
   public static async changeStatus(id: string, status: ProgramStatus): Promise<IProgram> {

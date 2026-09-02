@@ -26,6 +26,11 @@ import {
   Trash2,
   Loader2,
   Edit,
+  Award,
+  Film,
+  Sparkles,
+  AlertCircle,
+  FolderGit2,
 } from 'lucide-react';
 
 interface Lesson {
@@ -39,14 +44,15 @@ interface Lesson {
   contentType?: 'video' | 'audio' | 'pdf' | 'text';
   type?: string;
   contentUrl?: string;
-  isFreePreview?: boolean;
+  url?: string;
+  isPublished?: boolean;
 }
 
 interface Module {
-  _id?: string;
+  _id: string;
   id?: string;
+  order: number;
   weekNumber?: number;
-  order?: number;
   title: string;
   titleAr?: string;
   titleEn?: string;
@@ -54,6 +60,15 @@ interface Module {
   descriptionAr?: string;
   descriptionEn?: string;
   lessons: Lesson[];
+}
+
+export interface ICapstoneProject {
+  title: string;
+  titleEn?: string;
+  description: string;
+  descriptionEn?: string;
+  deliverable: string;
+  deliverableEn?: string;
 }
 
 interface InstructorProgram {
@@ -68,6 +83,7 @@ interface InstructorProgram {
   durationHours: number;
   status: 'open' | 'coming-soon' | 'closed';
   modules: Module[];
+  capstoneProject?: ICapstoneProject;
 }
 
 export default function InstructorProgramsPage() {
@@ -96,6 +112,17 @@ export default function InstructorProgramsPage() {
   const [newWeekTitle, setNewWeekTitle] = useState('');
   const [newWeekDesc, setNewWeekDesc] = useState('');
   const [isSubmittingWeek, setIsSubmittingWeek] = useState(false);
+
+  // Capstone Project Modal & State
+  const [isCapstoneModalOpen, setIsCapstoneModalOpen] = useState(false);
+  const [capstoneTitle, setCapstoneTitle] = useState('');
+  const [capstoneTitleEn, setCapstoneTitleEn] = useState('');
+  const [capstoneDesc, setCapstoneDesc] = useState('');
+  const [capstoneDescEn, setCapstoneDescEn] = useState('');
+  const [capstoneDeliverable, setCapstoneDeliverable] = useState('');
+  const [capstoneDeliverableEn, setCapstoneDeliverableEn] = useState('');
+  const [isSubmittingCapstone, setIsSubmittingCapstone] = useState(false);
+  const [capstoneErrors, setCapstoneErrors] = useState<Record<string, string>>({});
 
   // Fetch Live Modules for a specific program
   const fetchProgramModules = useCallback(async (progId: string) => {
@@ -168,6 +195,7 @@ export default function InstructorProgramsPage() {
             durationHours: prog.durationHours || 30,
             status: prog.status || 'open',
             modules: [],
+            capstoneProject: prog.capstoneProject || undefined,
           };
         });
 
@@ -196,7 +224,7 @@ export default function InstructorProgramsPage() {
 
   // Handle Selecting a Program
   const handleSelectProgram = async (prog: InstructorProgram) => {
-    setSelectedProgram(prog);
+    setSelectedProgram({ ...prog });
     const liveMods = await fetchProgramModules(prog._id);
     prog.modules = liveMods;
     setSelectedProgram({ ...prog });
@@ -204,6 +232,72 @@ export default function InstructorProgramsPage() {
       setExpandedWeekId(liveMods[0]._id || liveMods[0].id);
     } else {
       setExpandedWeekId(null);
+    }
+  };
+
+  // Open Capstone Modal
+  const handleOpenCapstoneModal = () => {
+    if (!selectedProgram) return;
+    setCapstoneErrors({});
+    const existing = selectedProgram.capstoneProject;
+    setCapstoneTitle(existing?.title || '');
+    setCapstoneTitleEn(existing?.titleEn || '');
+    setCapstoneDesc(existing?.description || '');
+    setCapstoneDescEn(existing?.descriptionEn || '');
+    setCapstoneDeliverable(existing?.deliverable || '');
+    setCapstoneDeliverableEn(existing?.deliverableEn || '');
+    setIsCapstoneModalOpen(true);
+  };
+
+  // Save Capstone Project
+  const handleSaveCapstone = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedProgram) return;
+
+    const errs: Record<string, string> = {};
+    if (!capstoneTitle.trim()) {
+      errs.title = isAr ? 'عنوان مشروع التخرج مطلوب' : 'Capstone project title is required';
+    }
+    if (!capstoneDesc.trim() || capstoneDesc.trim().length < 10) {
+      errs.description = isAr ? 'يرجى كتابة وصف وافي للمشروع (10 أحرف على الأقل)' : 'Description must be at least 10 chars';
+    }
+    if (!capstoneDeliverable.trim()) {
+      errs.deliverable = isAr ? 'مخرجات وتسليمات المشروع مطلوبة' : 'Deliverable output is required';
+    }
+
+    setCapstoneErrors(errs);
+    if (Object.keys(errs).length > 0) {
+      toast.error(isAr ? 'يرجى استكمال البيانات المطلوبة لمشروع التخرج' : 'Please fix the required fields');
+      return;
+    }
+
+    setIsSubmittingCapstone(true);
+    try {
+      const payload = {
+        title: capstoneTitle.trim(),
+        titleEn: capstoneTitleEn.trim() || undefined,
+        description: capstoneDesc.trim(),
+        descriptionEn: capstoneDescEn.trim() || undefined,
+        deliverable: capstoneDeliverable.trim(),
+        deliverableEn: capstoneDeliverableEn.trim() || undefined,
+      };
+
+      const res: any = await api.patch(`/programs/${selectedProgram._id}/capstone`, payload);
+      const updatedCapstone = res.data?.capstoneProject || payload;
+
+      selectedProgram.capstoneProject = updatedCapstone;
+      setSelectedProgram({ ...selectedProgram });
+
+      setPrograms((prev) =>
+        prev.map((p) => (p._id === selectedProgram._id ? { ...p, capstoneProject: updatedCapstone } : p))
+      );
+
+      toast.success(isAr ? 'تم حفظ وتحديث مشروع التخرج التطبيقي بنجاح 🎓' : 'Capstone project saved successfully 🎓');
+      setIsCapstoneModalOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || (isAr ? 'فشل حفظ مشروع التخرج' : 'Failed to save capstone project'));
+    } finally {
+      setIsSubmittingCapstone(false);
     }
   };
 
@@ -470,7 +564,15 @@ export default function InstructorProgramsPage() {
                 </h2>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handleOpenCapstoneModal}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500/15 to-gold-500/15 hover:from-amber-500/25 hover:to-gold-500/25 text-gold-600 dark:text-gold-400 border border-gold-500/30 font-bold text-xs shadow-sm transition-all"
+                >
+                  <Award className="w-4 h-4" />
+                  <span>{selectedProgram.capstoneProject?.title ? (isAr ? 'مشروع التخرج 🎓' : 'Capstone Project 🎓') : (isAr ? 'إضافة مشروع التخرج 🎓' : 'Add Capstone 🎓')}</span>
+                </button>
+
                 <button
                   onClick={() => setIsAddWeekOpen(true)}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold text-xs shadow-md shadow-gold-500/20 transition-all"
@@ -488,6 +590,54 @@ export default function InstructorProgramsPage() {
                   <ExternalLink className="w-3.5 h-3.5" />
                 </Link>
               </div>
+            </div>
+
+            {/* 🎓 Capstone Project Showcase Card */}
+            <div className="rounded-2xl border-2 border-gold-500/30 bg-gradient-to-br from-gold-500/10 via-amber-500/5 to-navy-950/20 p-5 space-y-3 relative overflow-hidden">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-2xl bg-gold-500/15 text-gold-600 dark:text-gold-400 border border-gold-500/30 shrink-0">
+                    <Film className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono font-bold text-gold-600 dark:text-gold-400 block uppercase tracking-wider">
+                      {isAr ? 'مشروع التخرج التطبيقي المعتمد (Capstone Project)' : 'Certified Capstone Project'}
+                    </span>
+                    <h3 className="text-sm sm:text-base font-bold text-navy-900 dark:text-white">
+                      {selectedProgram.capstoneProject?.title || (isAr ? 'لم يتم تحديد عنوان مشروع التخرج بعد' : 'No Capstone Project Set')}
+                    </h3>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleOpenCapstoneModal}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gold-500/20 hover:bg-gold-500/30 text-gold-600 dark:text-gold-400 border border-gold-500/30 text-xs font-bold transition-all shadow-sm w-fit"
+                >
+                  <Edit className="w-3.5 h-3.5" />
+                  <span>{selectedProgram.capstoneProject?.title ? (isAr ? 'تعديل مشروع التخرج' : 'Edit Capstone') : (isAr ? 'إضافة وتحديد المشروع' : 'Define Project')}</span>
+                </button>
+              </div>
+
+              {selectedProgram.capstoneProject?.description ? (
+                <div className="space-y-2.5 pt-1 text-xs">
+                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {selectedProgram.capstoneProject.description}
+                  </p>
+                  {selectedProgram.capstoneProject.deliverable && (
+                    <div className="flex items-center gap-2 text-[11px] font-bold text-gold-600 dark:text-gold-400 font-mono bg-gold-500/10 px-3 py-1.5 rounded-lg border border-gold-500/20 w-fit">
+                      <Award className="w-3.5 h-3.5 shrink-0" />
+                      <span>{isAr ? 'مخرجات وتسليمات المشروع:' : 'Deliverable:'} {selectedProgram.capstoneProject.deliverable}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-slate-500 dark:text-slate-400 pt-1">
+                  {isAr
+                    ? 'مشروع التخرج هو العمل التطبيقي الشامل الذي يقدمه الطالب في نهاية الدورة لنيل الشهادة المعتمدة. اضغط على «إضافة وتحديد المشروع» لتعيين تفاصيله.'
+                    : 'The capstone project is the comprehensive practical deliverable students submit to earn their certification.'}
+                </p>
+              )}
             </div>
 
             {/* Modules Accordion */}
@@ -788,6 +938,131 @@ export default function InstructorProgramsPage() {
                 >
                   {isSubmittingLesson && <Loader2 className="w-4 h-4 animate-spin" />}
                   <span>{isAr ? 'حفظ ونشر الدرس' : 'Save Lesson'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 🌟 Modal 3: Capstone Project Management Modal */}
+      {isCapstoneModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/70 backdrop-blur-sm p-4 font-cairo">
+          <div className="bg-white dark:bg-navy-900 border border-slate-200 dark:border-navy-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-5 text-start animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2.5 rounded-2xl bg-gold-500/10 text-gold-600 dark:text-gold-400 border border-gold-500/30">
+                  <Film className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-navy-900 dark:text-white">
+                    {isAr ? 'مشروع التخرج التطبيقي المعتمد' : 'Practical Capstone Project'}
+                  </h3>
+                  <span className="text-[11px] text-slate-400 font-mono">
+                    {selectedProgram?.titleAr}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsCapstoneModalOpen(false)}
+                className="p-1.5 rounded-xl text-gray-400 hover:text-white hover:bg-navy-800 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveCapstone} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 dark:text-gray-300">
+                  {isAr ? 'عنوان مشروع التخرج (بالعربية) *' : 'Capstone Title (Arabic) *'}
+                </label>
+                <input
+                  required
+                  type="text"
+                  value={capstoneTitle}
+                  onChange={(e) => {
+                    setCapstoneTitle(e.target.value);
+                    if (capstoneErrors.title) setCapstoneErrors({ ...capstoneErrors, title: '' });
+                  }}
+                  placeholder={isAr ? 'إنتاج حلقة بودكاست تفاعلية متكاملة بالذكاء الاصطناعي' : 'Full Podcast Production Project'}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-navy-950 border border-slate-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500"
+                />
+                {capstoneErrors.title && (
+                  <p className="text-rose-500 text-[11px] font-bold">{capstoneErrors.title}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 dark:text-gray-300">
+                  {isAr ? 'عنوان مشروع التخرج (بالإنجليزية - اختياري):' : 'Capstone Title (English - Optional):'}
+                </label>
+                <input
+                  type="text"
+                  value={capstoneTitleEn}
+                  onChange={(e) => setCapstoneTitleEn(e.target.value)}
+                  placeholder="AI-Powered Broadcast Podcast Production"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-navy-950 border border-slate-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500 font-mono"
+                  dir="ltr"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 dark:text-gray-300">
+                  {isAr ? 'وصف وتوجيهات المشروع للطلاب (بالعربية) *' : 'Project Description & Guidelines *'}
+                </label>
+                <textarea
+                  rows={3}
+                  required
+                  value={capstoneDesc}
+                  onChange={(e) => {
+                    setCapstoneDesc(e.target.value);
+                    if (capstoneErrors.description) setCapstoneErrors({ ...capstoneErrors, description: '' });
+                  }}
+                  placeholder={isAr ? 'يقوم كل متدرب بتسجيل وهندسة حلقة بودكاست كاملة مدتها 5 دقائق تشمل المؤثرات والفويس أوفر...' : 'Detailed project requirements and criteria...'}
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-navy-950 border border-slate-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500 leading-relaxed"
+                />
+                {capstoneErrors.description && (
+                  <p className="text-rose-500 text-[11px] font-bold">{capstoneErrors.description}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 dark:text-gray-300">
+                  {isAr ? 'مخرجات وتسليمات المشروع المطلوبة (بالعربية) *' : 'Project Deliverable / Output *'}
+                </label>
+                <input
+                  required
+                  type="text"
+                  value={capstoneDeliverable}
+                  onChange={(e) => {
+                    setCapstoneDeliverable(e.target.value);
+                    if (capstoneErrors.deliverable) setCapstoneErrors({ ...capstoneErrors, deliverable: '' });
+                  }}
+                  placeholder={isAr ? 'ملف صوتي MP3 320kbps + سكريبت PDF معتمد' : 'Master Audio File + PDF Script'}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-navy-950 border border-slate-200 dark:border-navy-800 text-xs text-navy-900 dark:text-white focus:outline-none focus:border-gold-500"
+                />
+                {capstoneErrors.deliverable && (
+                  <p className="text-rose-500 text-[11px] font-bold">{capstoneErrors.deliverable}</p>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-navy-800">
+                <button
+                  type="button"
+                  onClick={() => setIsCapstoneModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white font-cairo"
+                >
+                  {isAr ? 'إلغاء' : 'Cancel'}
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingCapstone}
+                  className="px-6 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold text-xs shadow-md shadow-gold-500/20 flex items-center gap-2 font-cairo"
+                >
+                  {isSubmittingCapstone && <Loader2 className="w-4 h-4 animate-spin" />}
+                  <span>{isAr ? 'حفظ مشروع التخرج' : 'Save Capstone'}</span>
                 </button>
               </div>
             </form>

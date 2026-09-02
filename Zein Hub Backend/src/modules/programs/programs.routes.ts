@@ -101,6 +101,14 @@ router.patch(
   asyncHandler(ProgramsController.updateProgram)
 );
 
+// Capstone Project Management (Assigned Instructor or Super Admin)
+router.patch(
+  '/:id/capstone',
+  requireAuth,
+  requireRole(UserRole.SUPER_ADMIN, UserRole.INSTRUCTOR),
+  asyncHandler(ProgramsController.updateCapstoneProject)
+);
+
 router.patch(
   '/:id/status',
   requireAuth,
