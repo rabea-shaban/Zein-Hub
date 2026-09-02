@@ -20,7 +20,33 @@ const app: Application = express();
 // Trust proxy for rate limiter if deployed behind load balancers/reverse proxies
 app.set('trust proxy', 1);
 
-// Ensure Database connection for serverless cold starts
+// 1. CORS Configuration (Must be FIRST before any other middlewares to properly handle preflight OPTIONS)
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    // Reflect requesting origin to allow credentials mode
+    if (!origin) return callback(null, true);
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'Cookie',
+    'sec-ch-ua',
+    'sec-ch-ua-mobile',
+    'sec-ch-ua-platform',
+  ],
+  exposedHeaders: ['Set-Cookie'],
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+
+// 2. Ensure Database connection for serverless cold starts
 app.use(async (_req, _res, next) => {
   try {
     await connectDB();
@@ -31,7 +57,7 @@ app.use(async (_req, _res, next) => {
   }
 });
 
-// 1. Security Headers via Helmet & Custom Security Headers
+// 3. Security Headers via Helmet & Custom Security Headers
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
@@ -39,16 +65,6 @@ app.use(
   })
 );
 app.use(securityHeaders);
-
-// 2. CORS configuration with credentials support for httpOnly cookies
-app.use(
-  cors({
-    origin: ENV.CLIENT_URL || true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cookie'],
-    credentials: true,
-  })
-);
 
 // 3. Response Compression (Optimized for JSON APIs > 1KB)
 app.use(
