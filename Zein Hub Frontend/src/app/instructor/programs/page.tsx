@@ -130,7 +130,7 @@ export default function InstructorProgramsPage() {
         console.warn('Direct me/programs fetch failed, falling back:', err);
       }
 
-      // 2. If empty or failed, fallback to /programs with filter for user
+      // 2. If empty or failed, fallback to /programs with strict filter for this instructor
       if (listToUse.length === 0) {
         const res = await api.get<any>('/programs', { params: { limit: 100 } });
         const rawList = Array.isArray(res.data) ? res.data : res.data?.programs || [];
@@ -144,10 +144,6 @@ export default function InstructorProgramsPage() {
             user?.role === 'super_admin'
           );
         });
-
-        if (listToUse.length === 0) {
-          listToUse = rawList;
-        }
       }
 
       if (listToUse && listToUse.length > 0) {

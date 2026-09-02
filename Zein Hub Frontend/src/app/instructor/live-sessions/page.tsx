@@ -81,10 +81,10 @@ export default function InstructorLiveSessionsPage() {
         const myRes = await api.get<any>('/instructors/me/programs');
         progs = Array.isArray(myRes.data) ? myRes.data : myRes.data?.programs || [];
       } catch (err) {
-        console.warn('Fallback loading all programs for dropdown:', err);
+        console.warn('Direct me/programs fetch failed:', err);
       }
 
-      if (progs.length === 0) {
+      if (progs.length === 0 && user?.role === 'super_admin') {
         const allRes = await api.get<any>('/programs', { params: { limit: 100 } });
         progs = Array.isArray(allRes.data) ? allRes.data : allRes.data?.programs || [];
       }

@@ -63,15 +63,16 @@ export class CourseModulesService {
 
     if (userRole === UserRole.INSTRUCTOR) {
       const profile = await InstructorProfile.findOne({ userId, isActive: true });
-      if (!profile) {
-        throw ApiError.forbidden('Forbidden: Instructor profile not found or inactive');
-      }
+      const program = await Program.findById(programId);
 
-      const isAssigned = profile.assignedPrograms.some(
+      const isAssignedInProfile = profile?.assignedPrograms?.some(
         (pid) => pid.toString() === programId.toString()
       );
+      const isDirectInstructor =
+        program?.instructorId?.toString() === userId ||
+        (profile && program?.instructorId?.toString() === profile._id.toString());
 
-      if (!isAssigned) {
+      if (!isAssignedInProfile && !isDirectInstructor) {
         throw ApiError.forbidden(
           'Forbidden: You are not authorized to manage content for this program'
         );

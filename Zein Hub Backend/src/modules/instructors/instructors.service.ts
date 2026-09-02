@@ -477,7 +477,11 @@ export class InstructorsService {
 
     const allProgramIds = Array.from(new Set([...assignedFromProfile, ...directIds]));
 
-    const filter = allProgramIds.length > 0 ? { _id: { $in: allProgramIds }, isActive: true } : { isActive: true };
+    if (allProgramIds.length === 0) {
+      return [];
+    }
+
+    const filter = { _id: { $in: allProgramIds }, isActive: true };
 
     const programs = await Program.find(filter).populate('trackId', 'nameAr nameEn slug');
 
