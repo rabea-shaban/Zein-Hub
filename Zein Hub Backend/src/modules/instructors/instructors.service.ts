@@ -169,13 +169,29 @@ export class InstructorsService {
     await user.save();
 
     // 2. Create InstructorProfile linked to user._id
+    const assignedObjIds = (dto.assignedPrograms || []).map(
+      (pid) => new mongoose.Types.ObjectId(pid)
+    );
+
+    // Enforce exclusivity: remove these programs from any other instructor
+    if (assignedObjIds.length > 0) {
+      await InstructorProfile.updateMany(
+        { assignedPrograms: { $in: assignedObjIds } },
+        { $pull: { assignedPrograms: { $in: assignedObjIds } } }
+      );
+      await Program.updateMany(
+        { _id: { $in: assignedObjIds } },
+        { $set: { instructorId: user._id } }
+      );
+    }
+
     const instructorProfile = new InstructorProfile({
       userId: user._id,
       specializationTrackId: dto.specializationTrackId || null,
       specializations: dto.specializations || [],
       bio: dto.bio.trim(),
       experienceYears: dto.experienceYears ?? 0,
-      assignedPrograms: dto.assignedPrograms || [],
+      assignedPrograms: assignedObjIds,
       photoUrl: dto.photoUrl?.trim() || null,
       reelUrl: dto.reelUrl?.trim() || null,
       socialLinks: dto.socialLinks || {},
@@ -250,9 +266,34 @@ export class InstructorsService {
     if (dto.bio) profile.bio = dto.bio.trim();
     if (dto.experienceYears !== undefined) profile.experienceYears = dto.experienceYears;
     if (dto.assignedPrograms !== undefined) {
-      profile.assignedPrograms = dto.assignedPrograms.map(
+      const newAssignedIds = dto.assignedPrograms.map(
         (pid) => new mongoose.Types.ObjectId(pid)
       );
+      const oldAssignedIds = (profile.assignedPrograms || []).map((p: any) => p.toString());
+      const newAssignedStrs = newAssignedIds.map((p) => p.toString());
+
+      // Find programs removed from this instructor
+      const unassignedProgramIds = oldAssignedIds.filter((id: string) => !newAssignedStrs.includes(id));
+      if (unassignedProgramIds.length > 0) {
+        await Program.updateMany(
+          { _id: { $in: unassignedProgramIds }, instructorId: { $in: [user._id, profile._id] } },
+          { $set: { instructorId: null } }
+        );
+      }
+
+      // If newly assigned programs exist, remove them from all other instructors and set instructorId
+      if (newAssignedIds.length > 0) {
+        await InstructorProfile.updateMany(
+          { _id: { $ne: profile._id }, assignedPrograms: { $in: newAssignedIds } },
+          { $pull: { assignedPrograms: { $in: newAssignedIds } } }
+        );
+        await Program.updateMany(
+          { _id: { $in: newAssignedIds } },
+          { $set: { instructorId: user._id } }
+        );
+      }
+
+      profile.assignedPrograms = newAssignedIds;
     }
     if (dto.photoUrl !== undefined) profile.photoUrl = dto.photoUrl?.trim() || undefined;
     if (dto.reelUrl !== undefined) profile.reelUrl = dto.reelUrl?.trim() || undefined;
@@ -275,11 +316,14 @@ export class InstructorsService {
   }
 
   /**
-   * Super Admin: Change Instructor account activation status
+   * Super Admin: Activate or deactivate instructor account
    */
-  public static async changeStatus(idOrUserId: string, isActive: boolean): Promise<any> {
+  public static async changeInstructorStatus(
+    idOrUserId: string,
+    isActive: boolean
+  ): Promise<any> {
     if (!mongoose.Types.ObjectId.isValid(idOrUserId)) {
-      throw ApiError.badRequest('Invalid identifier format');
+      throw ApiError.badRequest('Invalid instructor identifier format');
     }
 
     const profile = await InstructorProfile.findOne({
@@ -329,7 +373,32 @@ export class InstructorsService {
       throw ApiError.badRequest('One or more program IDs do not exist');
     }
 
-    profile.assignedPrograms = programIds.map((pid) => new mongoose.Types.ObjectId(pid));
+    const newAssignedIds = programIds.map((pid) => new mongoose.Types.ObjectId(pid));
+    const oldAssignedIds = (profile.assignedPrograms || []).map((p: any) => p.toString());
+    const newAssignedStrs = newAssignedIds.map((p) => p.toString());
+
+    // Unassign removed programs
+    const unassigned = oldAssignedIds.filter((id: string) => !newAssignedStrs.includes(id));
+    if (unassigned.length > 0) {
+      await Program.updateMany(
+        { _id: { $in: unassigned }, instructorId: { $in: [profile.userId, profile._id] } },
+        { $set: { instructorId: null } }
+      );
+    }
+
+    if (newAssignedIds.length > 0) {
+      // Remove from other instructors
+      await InstructorProfile.updateMany(
+        { _id: { $ne: profile._id }, assignedPrograms: { $in: newAssignedIds } },
+        { $pull: { assignedPrograms: { $in: newAssignedIds } } }
+      );
+      await Program.updateMany(
+        { _id: { $in: newAssignedIds } },
+        { $set: { instructorId: profile.userId } }
+      );
+    }
+
+    profile.assignedPrograms = newAssignedIds;
     await profile.save();
 
     return {

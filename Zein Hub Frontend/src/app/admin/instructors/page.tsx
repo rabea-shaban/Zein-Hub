@@ -678,34 +678,52 @@ export default function AdminInstructorsPage() {
 
               {/* Assigned Programs Selector in Create Modal */}
               <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5 font-cairo">
-                  {isAr ? 'تحديد البرامج التي سيدرسها المحاضر:' : 'Assign Programs to Teach:'}
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 font-cairo">
+                    {isAr ? 'تحديد البرامج التي سيدرسها المحاضر (حصرياً):' : 'Assign Programs to Teach (Exclusive):'}
+                  </label>
+                  <span className="text-[10px] text-gray-400 font-normal">
+                    {isAr ? '* البرنامج يدرسه مدرب واحد فقط' : '* 1 Instructor per program'}
+                  </span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800">
                   {allPrograms.map((prog) => {
                     const checked = createAssignedPrograms.includes(prog._id);
+                    const currentTeacher = instructors.find((inst) => {
+                      const assigned = inst.instructorProfile?.assignedPrograms || [];
+                      return assigned.some((p: any) => (typeof p === 'object' ? p._id : p) === prog._id);
+                    });
+                    const currentTeacherName = currentTeacher?.fullName || currentTeacher?.userId?.fullName || currentTeacher?.user?.fullName;
+
                     return (
                       <label
                         key={prog._id}
-                        className={`flex items-center gap-2 p-2 rounded-lg text-xs font-bold cursor-pointer transition-all ${
+                        className={`flex flex-col p-2.5 rounded-lg text-xs font-bold cursor-pointer transition-all ${
                           checked
                             ? 'bg-gold-500/20 text-gold-600 dark:text-gold-400 border border-gold-500/30'
                             : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-850'
                         }`}
                       >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setCreateAssignedPrograms([...createAssignedPrograms, prog._id]);
-                            } else {
-                              setCreateAssignedPrograms(createAssignedPrograms.filter((id) => id !== prog._id));
-                            }
-                          }}
-                          className="rounded text-gold-500 focus:ring-gold-500"
-                        />
-                        <span className="truncate">{isAr ? prog.titleAr : prog.titleEn || prog.titleAr}</span>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setCreateAssignedPrograms([...createAssignedPrograms, prog._id]);
+                              } else {
+                                setCreateAssignedPrograms(createAssignedPrograms.filter((id) => id !== prog._id));
+                              }
+                            }}
+                            className="rounded text-gold-500 focus:ring-gold-500"
+                          />
+                          <span className="truncate">{isAr ? prog.titleAr : prog.titleEn || prog.titleAr}</span>
+                        </div>
+                        {currentTeacherName && (
+                          <span className="text-[10px] text-amber-500 dark:text-amber-400 font-normal mt-1 ps-6 truncate">
+                            {isAr ? `(مسند حالياً لـ: ${currentTeacherName})` : `(Assigned to: ${currentTeacherName})`}
+                          </span>
+                        )}
                       </label>
                     );
                   })}
@@ -871,40 +889,59 @@ export default function AdminInstructorsPage() {
 
               {/* Assigned Programs Selector in Edit Modal */}
               <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5 font-cairo">
-                  {isAr ? 'تعديل البرامج التدريبية المسندة للمحاضر:' : 'Assign Programs to Teach:'}
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 font-cairo">
+                    {isAr ? 'تعديل البرامج التدريبية المسندة للمحاضر (حصرياً):' : 'Assign Programs to Teach (Exclusive):'}
+                  </label>
+                  <span className="text-[10px] text-gray-400 font-normal">
+                    {isAr ? '* البرنامج يدرسه مدرب واحد فقط' : '* 1 Instructor per program'}
+                  </span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2.5 rounded-xl bg-gray-50 dark:bg-navy-950 border border-gray-200 dark:border-navy-800">
                   {allPrograms.map((prog) => {
                     const checked = editFormData.assignedPrograms.includes(prog._id);
+                    const currentTeacher = instructors.find((inst) => {
+                      if (inst._id === selectedEditInstructor?._id || inst.userId?._id === selectedEditInstructor?.userId?._id) return false;
+                      const assigned = inst.instructorProfile?.assignedPrograms || [];
+                      return assigned.some((p: any) => (typeof p === 'object' ? p._id : p) === prog._id);
+                    });
+                    const currentTeacherName = currentTeacher?.fullName || currentTeacher?.userId?.fullName || currentTeacher?.user?.fullName;
+
                     return (
                       <label
                         key={prog._id}
-                        className={`flex items-center gap-2 p-2 rounded-lg text-xs font-bold cursor-pointer transition-all ${
+                        className={`flex flex-col p-2.5 rounded-lg text-xs font-bold cursor-pointer transition-all ${
                           checked
                             ? 'bg-gold-500/20 text-gold-600 dark:text-gold-400 border border-gold-500/30'
                             : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-850'
                         }`}
                       >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setEditFormData({
-                                ...editFormData,
-                                assignedPrograms: [...editFormData.assignedPrograms, prog._id],
-                              });
-                            } else {
-                              setEditFormData({
-                                ...editFormData,
-                                assignedPrograms: editFormData.assignedPrograms.filter((id) => id !== prog._id),
-                              });
-                            }
-                          }}
-                          className="rounded text-gold-500 focus:ring-gold-500"
-                        />
-                        <span className="truncate">{isAr ? prog.titleAr : prog.titleEn || prog.titleAr}</span>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setEditFormData({
+                                  ...editFormData,
+                                  assignedPrograms: [...editFormData.assignedPrograms, prog._id],
+                                });
+                              } else {
+                                setEditFormData({
+                                  ...editFormData,
+                                  assignedPrograms: editFormData.assignedPrograms.filter((id) => id !== prog._id),
+                                });
+                              }
+                            }}
+                            className="rounded text-gold-500 focus:ring-gold-500"
+                          />
+                          <span className="truncate">{isAr ? prog.titleAr : prog.titleEn || prog.titleAr}</span>
+                        </div>
+                        {currentTeacherName && (
+                          <span className="text-[10px] text-amber-500 dark:text-amber-400 font-normal mt-1 ps-6 truncate">
+                            {isAr ? `(مسند حالياً لـ: ${currentTeacherName})` : `(Assigned to: ${currentTeacherName})`}
+                          </span>
+                        )}
                       </label>
                     );
                   })}
