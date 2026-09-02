@@ -24,8 +24,8 @@ export default function LoginPage() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: 'admin@zeinhub.com',
-      password: 'Admin@ZeinHub2026!',
+      email: '',
+      password: '',
     },
   });
 
@@ -90,7 +90,7 @@ export default function LoginPage() {
                 <input
                   type="email"
                   {...register('email')}
-                  placeholder="admin@zeinhub.com"
+                  placeholder="name@example.com"
                   className={inputClass(!!errors.email)}
                 />
                 <Mail className="w-4 h-4 text-gray-500 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -133,19 +133,6 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-
-          {/* Quick Demo Credentials Help */}
-          <div className="mt-8 pt-6 border-t border-navy-800 text-xs text-gray-400 space-y-2 font-mono text-start">
-            <span className="font-bold text-gray-300 block font-cairo">حسابات الدخول التجريبية السريعة:</span>
-            <div className="p-2.5 rounded-xl bg-navy-950/80 border border-navy-800">
-              <span className="text-gold-400 font-bold font-cairo block">👑 المدير العام (Super Admin):</span>
-              <span className="text-gray-300 block">admin@zeinhub.com / Admin@ZeinHub2026!</span>
-            </div>
-            <div className="p-2.5 rounded-xl bg-navy-950/80 border border-navy-800">
-              <span className="text-gold-400 font-bold font-cairo block">🎙️ المحاضر (Instructor):</span>
-              <span className="text-gray-300 block">tarek.sohagi@zeinhub.com / Instructor@ZeinHub2026!</span>
-            </div>
-          </div>
         </div>
 
         {/* Back Link */}
