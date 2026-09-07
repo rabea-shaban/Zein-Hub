@@ -28,8 +28,12 @@ export interface IProgram extends Document {
   slug: string;
   trackId: Types.ObjectId;
   instructorId?: Types.ObjectId;
+  taglineAr?: string;
+  taglineEn?: string;
   descriptionAr: string;
   descriptionEn?: string;
+  strategicNote?: string;
+  strategicNoteEn?: string;
   objectives?: string[];
   targetAudience?: string[];
   targetAudienceEn?: string[];
@@ -116,12 +120,28 @@ const programSchema = new Schema<IProgram>(
       ref: 'User',
       index: true,
     },
+    taglineAr: {
+      type: String,
+      trim: true,
+    },
+    taglineEn: {
+      type: String,
+      trim: true,
+    },
     descriptionAr: {
       type: String,
       required: [true, 'Arabic description is required'],
       trim: true,
     },
     descriptionEn: {
+      type: String,
+      trim: true,
+    },
+    strategicNote: {
+      type: String,
+      trim: true,
+    },
+    strategicNoteEn: {
       type: String,
       trim: true,
     },

@@ -63,10 +63,12 @@ export function mapBackendInstructorToFrontend(
       matchFallback?.bioEn ||
       "Certified media instructor and senior faculty coach at Zein Hub.",
     avatar:
-      raw.avatarUrl ||
       raw.photoUrl ||
+      raw.user?.avatarUrl ||
+      (typeof raw.userId === "object" && raw.userId?.avatarUrl) ||
+      raw.avatarUrl ||
       matchFallback?.avatar ||
-      "/images/instructors/tarek.png",
+      "/images/instructors/abdelrahman-sultan.jpg",
     specialization: rawSpecs,
     specializationEn: matchFallback?.specializationEn || rawSpecs,
     experienceYears: years,

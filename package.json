@@ -4,13 +4,14 @@
   "private": true,
   "description": "Zein Hub Platform - Monorepo root for Backend and Frontend",
   "scripts": {
+    "start": "node scripts/start.js",
     "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgYellow.bold\" \"npm --prefix \\\"Zein Hub Backend\\\" run dev\" \"npm --prefix \\\"Zein Hub Frontend\\\" run dev\"",
     "dev:backend": "npm --prefix \"Zein Hub Backend\" run dev",
     "dev:frontend": "npm --prefix \"Zein Hub Frontend\" run dev",
     "build": "npm --prefix \"Zein Hub Backend\" run build && npm --prefix \"Zein Hub Frontend\" run build",
     "build:backend": "npm --prefix \"Zein Hub Backend\" run build",
     "build:frontend": "npm --prefix \"Zein Hub Frontend\" run build",
-    "install:all": "npm --prefix \"Zein Hub Backend\" install && npm --prefix \"Zein Hub Frontend\" install"
+    "install:all": "npm install && npm --prefix \"Zein Hub Backend\" install && npm --prefix \"Zein Hub Frontend\" install"
   },
   "dependencies": {
     "concurrently": "^9.1.2"

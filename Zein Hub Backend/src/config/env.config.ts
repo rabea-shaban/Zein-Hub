@@ -6,7 +6,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 export const ENV = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: Number(process.env.PORT) || 5000,
-  MONGO_URI: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/zein_hub',
+  MONGO_URI: process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/zein_hub',
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:3000',
 
   // JWT Configuration

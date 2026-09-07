@@ -73,6 +73,8 @@ export interface Program {
   };
   prerequisites: string[];
   prerequisitesEn?: string[];
+  strategicNote?: string;
+  strategicNoteEn?: string;
   locationDetails?: string;
   locationDetailsEn?: string;
 }

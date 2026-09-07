@@ -51,6 +51,8 @@ export function ProgramDetailClient({
 
   const title = language === "en" && program.titleEn ? program.titleEn : program.title;
   const subtitle = language === "en" && program.subtitleEn ? program.subtitleEn : program.subtitle;
+  const description = language === "en" && program.descriptionEn ? program.descriptionEn : program.description;
+  const strategicNote = language === "en" && program.strategicNoteEn ? program.strategicNoteEn : program.strategicNote;
   const category = language === "en" && program.categoryEn ? program.categoryEn : program.category;
   const format = language === "en" && program.formatEn ? program.formatEn : program.format;
   const level = language === "en" && program.levelEn ? program.levelEn : program.level;
@@ -194,6 +196,40 @@ export function ProgramDetailClient({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-2">
         {/* Main Content Area (8 cols) */}
         <div className="lg:col-span-8 space-y-12 text-start">
+          {/* Strategic Note Banner */}
+          {strategicNote && (
+            <div className="p-5 sm:p-6 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 flex items-start gap-4 shadow-sm">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0">
+                <AlertCircle className="h-5 w-5" />
+              </div>
+              <div className="space-y-1.5">
+                <span className="font-black text-xs uppercase tracking-wider text-amber-700 dark:text-amber-400 block">
+                  {language === "en" ? "Strategic Advisory Note" : "ملاحظة استراتيجية"}
+                </span>
+                <p className="text-xs sm:text-sm leading-[1.85] font-medium">
+                  {strategicNote}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* About Program Description Card */}
+          {description && (
+            <div className="space-y-4 rounded-3xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-navy-800 p-6 sm:p-8 shadow-xl transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-gold-500/10 border border-gold-500/20 text-gold-600 dark:text-gold-400">
+                  <Film className="h-5 w-5" />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+                  {language === "en" ? "About the Program" : "نبذة عن البرنامج"}
+                </h2>
+              </div>
+              <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-[2.1] font-medium">
+                {description}
+              </p>
+            </div>
+          )}
+
           {/* 1. Learning Outcomes */}
           {learningOutcomes && learningOutcomes.length > 0 && (
             <div className="space-y-6 rounded-3xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-navy-800 p-6 sm:p-8 shadow-xl transition-colors">
@@ -515,20 +551,47 @@ export function ProgramDetailClient({
             </div>
 
             {/* Apply Button or Coming Soon Banner (Item 10 Business Rule) */}
-            <div className="pt-2">
+            <div className="pt-2 space-y-2.5">
               {isOpen ? (
-                <Button
-                  onClick={() => setIsApplyModalOpen(true)}
-                  className="w-full bg-gold-500 hover:bg-gold-600 text-navy-950 font-black border border-gold-400 shadow-gold-glow py-4 text-base gap-2 hover:scale-[1.02] transition-all"
-                  size="lg"
-                >
-                  <span>{t.applyNow}</span>
-                  {direction === "rtl" ? (
-                    <ArrowLeft className="h-4 w-4" />
-                  ) : (
-                    <ArrowRight className="h-4 w-4" />
-                  )}
-                </Button>
+                <>
+                  <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 flex items-center gap-2.5 text-xs font-bold shadow-sm">
+                    <span className="relative flex h-2 w-2 shrink-0">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                    </span>
+                    <span>{language === "en" ? "📍 Only 10 seats strictly available for this cohort!" : "📍 10 أماكن فقط متاحة للتسجيل في هذه الدفعة"}</span>
+                  </div>
+
+                  <Button
+                    onClick={() => setIsApplyModalOpen(true)}
+                    className="w-full bg-gold-500 hover:bg-gold-600 text-navy-950 font-black border border-gold-400 shadow-gold-glow py-4 text-base gap-2 hover:scale-[1.02] transition-all"
+                    size="lg"
+                  >
+                    <span>{t.applyNow}</span>
+                    {direction === "rtl" ? (
+                      <ArrowLeft className="h-4 w-4" />
+                    ) : (
+                      <ArrowRight className="h-4 w-4" />
+                    )}
+                  </Button>
+
+                  <a
+                    href={`https://wa.me/201000000000?text=${encodeURIComponent(
+                      `مرحبًا منصة Zein Hub، أرغب في الاستفسار وحجز مقعد في برنامج "${title}" مع المهندس عبدالرحمن سلطان.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full"
+                  >
+                    <Button
+                      variant="outline"
+                      className="w-full border-green-500/40 text-green-700 dark:text-green-400 hover:bg-green-500 hover:text-white font-bold py-3 text-xs gap-2 transition-all"
+                    >
+                      <PhoneCall className="h-3.5 w-3.5" />
+                      <span>{language === "en" ? "Book via WhatsApp" : "احجز مكانك عبر واتساب"}</span>
+                    </Button>
+                  </a>
+                </>
               ) : (
                 <div className="p-4 rounded-2xl bg-slate-100 dark:bg-navy-950 border border-slate-200 dark:border-navy-800 space-y-3 text-center">
                   <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300">

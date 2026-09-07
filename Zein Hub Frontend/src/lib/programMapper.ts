@@ -76,8 +76,8 @@ export function mapBackendProgramToFrontend(raw: any, fallbackPrograms: Program[
     status: raw.status || matchFallback?.status || "open",
     title: raw.titleAr || raw.title || matchFallback?.title || "برنامج تدريبي",
     titleEn: raw.titleEn || raw.titleAr || matchFallback?.titleEn || "Training Program",
-    subtitle: raw.descriptionAr || raw.subtitle || matchFallback?.subtitle || "",
-    subtitleEn: raw.descriptionEn || raw.subtitleEn || matchFallback?.subtitleEn || "",
+    subtitle: raw.taglineAr || raw.tagline || matchFallback?.subtitle || raw.descriptionAr || "",
+    subtitleEn: raw.taglineEn || raw.taglineEn || matchFallback?.subtitleEn || raw.descriptionEn || "",
     description: raw.descriptionAr || raw.description || matchFallback?.description || "",
     descriptionEn: raw.descriptionEn || raw.description || matchFallback?.descriptionEn || "",
     category: categoryAr,
@@ -155,5 +155,7 @@ export function mapBackendProgramToFrontend(raw: any, fallbackPrograms: Program[
     },
     prerequisites: raw.prerequisites || matchFallback?.prerequisites || ["الشغف بالتعلم والالتزام بحضور التدريبات العملية"],
     prerequisitesEn: raw.prerequisitesEn || matchFallback?.prerequisitesEn || ["Passion for learning and commitment to studio sessions"],
+    strategicNote: raw.strategicNote || matchFallback?.strategicNote,
+    strategicNoteEn: raw.strategicNoteEn || matchFallback?.strategicNoteEn,
   };
 }

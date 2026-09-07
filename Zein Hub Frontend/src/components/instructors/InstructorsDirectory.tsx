@@ -30,21 +30,35 @@ export function InstructorsDirectory({
     React.useState<Instructor | null>(null);
   const { language, direction, t } = useLanguage();
 
-  const filterCategories = [
-    { label: t.allTracks, value: "all" },
-    { label: language === "en" ? "Investigative Journalism" : "صحافة استقصائية", value: "صحافة استقصائية" },
-    { label: language === "en" ? "Mobile Journalism (MoJo)" : "صحافة الموبايل (MoJo)", value: "صحافة الموبايل" },
-    { label: language === "en" ? "TV Anchoring" : "تقديم وإلقاء تلفزيوني", value: "تقديم تلفزيوني" },
-    { label: language === "en" ? "Podcasting & Audio" : "إنتاج بودكاست وهندسة صوت", value: "بودكاست" },
-  ];
+  const filterCategories = React.useMemo(() => {
+    const cats = [{ label: t.allTracks, value: "all" }];
+    const seen = new Set<string>();
+    instructors.forEach((inst) => {
+      const specs = language === "en" && inst.specializationEn?.length
+        ? inst.specializationEn
+        : inst.specialization;
+      specs?.forEach((spec) => {
+        if (spec && !seen.has(spec)) {
+          seen.add(spec);
+          cats.push({ label: spec, value: spec });
+        }
+      });
+    });
+    return cats;
+  }, [instructors, language, t.allTracks]);
 
   const filteredInstructors = React.useMemo(() => {
     if (selectedCategory === "all") return instructors;
-    return instructors.filter((inst) =>
-      inst.specialization.some((spec) =>
-        spec.toLowerCase().includes(selectedCategory.toLowerCase())
-      )
-    );
+    return instructors.filter((inst) => {
+      const specs = [
+        ...(inst.specialization || []),
+        ...(inst.specializationEn || []),
+      ];
+      return specs.some((spec) =>
+        spec.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+        selectedCategory.toLowerCase().includes(spec.toLowerCase())
+      );
+    });
   }, [instructors, selectedCategory]);
 
   return (

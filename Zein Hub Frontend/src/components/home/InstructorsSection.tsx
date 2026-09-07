@@ -21,9 +21,15 @@ export function InstructorsSection() {
   useEffect(() => {
     async function loadInstructors() {
       try {
-        const res = await api.get<any[]>("/instructors/admin/all");
-        if (res.data && Array.isArray(res.data) && res.data.length > 0) {
-          const mapped: Instructor[] = res.data
+        const res = await api.get<any>("/instructors", {
+          params: { limit: 6 },
+        });
+        const rawList = Array.isArray(res.data)
+          ? res.data
+          : res.data?.instructors || [];
+
+        if (rawList && rawList.length > 0) {
+          const mapped: Instructor[] = rawList
             .slice(0, 6)
             .map((item: any) =>
               mapBackendInstructorToFrontend(item, initialInstructors)

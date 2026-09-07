@@ -73,6 +73,11 @@ interface TrackItem {
 }
 
 const INSTRUCTOR_TRANSLATIONS: Record<string, { nameEn: string; bioEn: string; specsEn: string[] }> = {
+  'م. عبد الرحمن سلطان': {
+    nameEn: 'Eng. Abdelrahman Sultan',
+    bioEn: 'Senior Voice-Over artist & certified vocalise master with 9+ years of practical experience across Egyptian and Gulf media markets.',
+    specsEn: ['Voice-Over', 'Digital Vocalise', 'Soundeals Certified', 'Audio Engineering'],
+  },
   'د. طارق السوهاجي': {
     nameEn: 'Dr. Tarek El Sohagi',
     bioEn: 'Senior broadcast voice coach with 15+ years of practical experience across leading Arab media platforms.',
@@ -488,9 +493,9 @@ export default function AdminInstructorsPage() {
                 <div>
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-14 h-14 rounded-2xl bg-gold-500/10 border border-gold-500/30 overflow-hidden flex items-center justify-center font-bold text-gold-600 dark:text-gold-400 text-lg shrink-0 shadow-sm">
-                      {inst.avatarUrl || inst.userId?.avatarUrl || inst.user?.avatarUrl ? (
+                      {inst.photoUrl || inst.avatarUrl || inst.userId?.avatarUrl || inst.user?.avatarUrl ? (
                         <img
-                          src={inst.avatarUrl || inst.userId?.avatarUrl || inst.user?.avatarUrl}
+                          src={inst.photoUrl || inst.avatarUrl || inst.userId?.avatarUrl || inst.user?.avatarUrl}
                           alt={name}
                           className="w-full h-full object-cover"
                         />

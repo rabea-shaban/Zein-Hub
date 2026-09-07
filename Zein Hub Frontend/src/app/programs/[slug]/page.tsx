@@ -94,10 +94,10 @@ export default async function ProgramDetailPage({
       titleEn: "Senior Certified Media Coach",
       bio: backendInstructorData.bio || "مدرب واستشاري إعلامي وصوتي معتمد لدى استوديوهات Zein Hub بصعيد مصر.",
       bioEn: backendInstructorData.bioEn || "Certified Media & Vocal Coach at Zein Hub Studios Upper Egypt.",
-      avatar: rawUser.avatarUrl || backendInstructorData.photoUrl || "/images/instructors/instructor-1.svg",
+      avatar: rawUser.avatarUrl || backendInstructorData.photoUrl || "/images/instructors/abdelrahman-sultan.jpg",
       specialization: backendInstructorData.specializations || ["الفوكاليز الرقمي", "التعليق الصوتي"],
       specializationEn: backendInstructorData.specializationsEn || ["Digital Vocalise", "Voice-Over"],
-      experienceYears: backendInstructorData.experienceYears || 12,
+      experienceYears: backendInstructorData.experienceYears || 9,
       featured: true,
     };
   }
