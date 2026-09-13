@@ -4,6 +4,7 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
+import { FloatingContact } from './FloatingContact';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -17,7 +18,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     pathname === '/register';
 
   if (isDashboardOrAuth) {
-    return <>{children}</>;
+    return (
+      <>
+        {children}
+        <FloatingContact />
+      </>
+    );
   }
 
   return (
@@ -25,6 +31,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
+      <FloatingContact />
     </>
   );
 }

@@ -7,8 +7,8 @@ export const SITE_CONFIG: SiteConfig = {
     "Zein Hub منصة متخصصة في التدريب الإعلامي الاحترافي، من الصعيد.. بنصنع إعلام المستقبل، بنركز على تطوير المهارات العملية وربطها باحتياجات سوق الإعلام مع اهتمام خاص بمواهب وشباب صعيد مصر.",
   url: "https://zein-hub.vercel.app",
   email: "contact@zeinhub.com",
-  phone: "+20 100 000 0000",
-  whatsapp: "+20 100 000 0000",
+  phone: "+20 11 17231511",
+  whatsapp: "+20 11 17231511",
   workingHours: "السبت – الخميس: 9:00 ص – 6:00 م",
   socials: {
     facebook: "https://facebook.com/zeinhub",

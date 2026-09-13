@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zein Hub Platform — عرض تقديمي احترافي شامل</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              100: '#cffafe',
+              200: '#a5f3fc',
+              300: '#67e8f9',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+              800: '#155e75',
+              900: '#164e63',
+            },
+            accent: {
+              purple: '#8b5cf6',
+              amber: '#f59e0b',
+              emerald: '#10b981',
+              rose: '#f43f5e',
+            },
+            darkBg: '#070b14',
+            darkCard: '#0f172a',
+            darkBorder: '#1e293b'
+          },
+          fontFamily: {
+            cairo: ['Cairo', 'Segoe UI', 'sans-serif'],
+            mono: ['Consolas', 'Courier New', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts: Cairo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Cairo', 'Segoe UI', sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background-color: #070b14;
+      color: #f8fafc;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Background Canvas */
+    #particle-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Glassmorphism Styles */
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 25px rgba(6, 182, 212, 0.08);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(6, 182, 212, 0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 35px rgba(6, 182, 212, 0.18);
+    }
+
+    /* Glow Effects */
+    .glow-cyan {
+      text-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+    }
+    .glow-purple {
+      text-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+    }
+    .glow-gold {
+      text-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+    }
+
+    /* Slides Container & Transition */
+    .slide-viewport {
+      perspective: 1500px;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.92) translateY(30px) rotateX(-5deg);
+      transition: all 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2.5rem 4rem;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0) rotateX(0);
+      z-index: 20;
+      pointer-events: auto;
+    }
+
+    .slide.prev {
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(1.08) translateY(-30px) rotateX(5deg);
+      z-index: 5;
+    }
+
+    /* Element Animations */
+    .anim-fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .slide.active .anim-fade-up {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+    .delay-5 { transition-delay: 0.5s; }
+
+    /* Laser pointer */
+    #laser-pointer {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: #f43f5e;
+      border-radius: 50%;
+      box-shadow: 0 0 15px #f43f5e, 0 0 30px #f43f5e;
+      pointer-events: none;
+      z-index: 1000;
+      display: none;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b1120;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #06b6d4;
+    }
+
+    /* Print / PDF Styles */
+    @media print {
+      body {
+        overflow: visible !important;
+        height: auto !important;
+        background: #fff !important;
+        color: #000 !important;
+      }
+      #particle-canvas, .controls-overlay, #laser-pointer {
+        display: none !important;
+      }
+      .slide {
+        position: relative !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        page-break-after: always !important;
+        min-height: 100vh !important;
+        padding: 2rem !important;
+        background: #070b14 !important;
+        color: #fff !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-darkBg text-slate-100 flex flex-col justify-between select-none overflow-hidden relative">
+
+  <!-- Background Particle Animation Canvas -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Laser Pointer Element -->
+  <div id="laser-pointer"></div>
+
+  <!-- Top Global Header -->
+  <header class="relative z-30 flex items-center justify-between px-8 py-4 border-b border-slate-800/80 bg-darkBg/60 backdrop-blur-md">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20 font-bold text-lg">
+        <i class="fa-solid fa-layer-group"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-lg tracking-wider bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">ZEIN HUB</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-800/50 text-cyan-400 font-semibold">Media LMS 2026</span>
+        </div>
+        <p class="text-[11px] text-slate-400">المنصة الشاملة للتدريب الإعلامي والصوتي والتقني</p>
+      </div>
+    </div>
+
+    <!-- Presentation Utilities -->
+    <div class="flex items-center gap-2 bg-slate-900/80 border border-slate-800 rounded-full px-3 py-1.5 backdrop-blur-md">
+      <button id="btn-sound" onclick="toggleSound()" title="تشغيل / كتم المؤثرات الصوتية" class="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-cyan-400 transition-colors">
+        <i class="fa-solid fa-volume-high text-xs"></i>
+      </button>
+      <button id="btn-laser" onclick="toggleLaser()" title="مؤشر الليزر (L)" class="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition-colors">
+        <i class="fa-solid fa-bullseye text-xs"></i>
+      </button>
+      <button id="btn-autoplay" onclick="toggleAutoplay()" title="التشغيل التلقائي للسلايدات" class="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition-colors">
+        <i class="fa-solid fa-play text-xs"></i>
+      </button>
+      <button id="btn-grid" onclick="toggleOverview()" title="عرض شبكة الشرائح (O أو Esc)" class="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-purple-400 transition-colors">
+        <i class="fa-solid fa-table-cells-large text-xs"></i>
+      </button>
+      <button id="btn-print" onclick="window.print()" title="تصدير إلى PDF / طباعة" class="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition-colors">
+        <i class="fa-solid fa-file-pdf text-xs"></i>
+      </button>
+      <div class="h-4 w-px bg-slate-700 mx-1"></div>
+      <button id="btn-fullscreen" onclick="toggleFullScreen()" title="شاشة كاملة (F)" class="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-cyan-400 transition-colors">
+        <i class="fa-solid fa-expand text-xs"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Slides Viewport Area -->
+  <main class="relative z-20 flex-1 w-full h-[calc(100vh-140px)] slide-viewport overflow-hidden">
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 1: Hero / Cover Slide -->
+    <!-- ============================================================== -->
+    <section class="slide active" data-title="الافتتاحية">
+      <div class="max-w-6xl mx-auto w-full text-center flex flex-col items-center">
+        <div class="anim-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-sm font-semibold mb-6 shadow-inner">
+          <i class="fa-solid fa-sparkles"></i>
+          <span>المنظومة الاحترافية لإدارة التعليم والتدريب الرقمي</span>
+        </div>
+
+        <h1 class="anim-fade-up delay-1 text-5xl md:text-7xl font-black mb-6 tracking-tight leading-tight">
+          <span class="bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">منصة</span>
+          <span class="bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent glow-cyan"> ZEIN HUB </span>
+        </h1>
+
+        <p class="anim-fade-up delay-2 text-xl md:text-2xl text-slate-300 max-w-3xl font-medium leading-relaxed mb-12">
+          البيئة الرقمية المتكاملة لتدريب وتمكين صناع المحتوى الإعلامي، مهندسي الصوت، والتقنيين عبر مسارات تفاعلية معتمدة.
+        </p>
+
+        <!-- 3 Feature Badges -->
+        <div class="anim-fade-up delay-3 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl text-right">
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all"></div>
+            <div class="w-12 h-12 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl mb-4 font-bold border border-cyan-500/30">
+              <i class="fa-solid fa-cubes"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Monorepo حديث ومتكامل</h3>
+            <p class="text-sm text-slate-400">Next.js 16 مع React 19 للواجهة + Express 5 و TypeScript للواجهة البرمجية الخلفية.</p>
+          </div>
+
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
+            <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl mb-4 font-bold border border-purple-500/30">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">أمان وتحصين سحابي عالي</h3>
+            <p class="text-sm text-slate-400">مصادقة httpOnly Cookies، محدد معدل الطلبات، وحماية من XSS و NoSQL Injections.</p>
+          </div>
+
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
+            <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl mb-4 font-bold border border-amber-500/30">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">منظومة أكاديمية كاملة</h3>
+            <p class="text-sm text-slate-400">19 موديول: كويزات، تكليفات، بث مباشر، شهادات معتمدة برمز تحقق QR فريد.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 2: Problem & Vision -->
+    <!-- ============================================================== -->
+    <section class="slide" data-title="الرؤية والهدف">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-8">
+          <span class="text-xs font-bold tracking-widest text-cyan-400 uppercase bg-cyan-950/60 px-3 py-1 rounded-full border border-cyan-800/40">THE VISION & GAP</span>
+          <h2 class="text-3xl md:text-4xl font-extrabold text-white mt-2">لماذا قمنا ببناء منصة Zein Hub؟</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Problem Box -->
+          <div class="glass-card p-8 rounded-3xl border border-rose-900/30 bg-gradient-to-b from-rose-950/10 to-transparent">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-lg border border-rose-500/30">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+              <h3 class="text-xl font-bold text-rose-300">التحديات والفجوة في السوق</h3>
+            </div>
+            <ul class="space-y-4 text-slate-300 text-base">
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-circle-xmark text-rose-400 mt-1"></i>
+                <span>ندرة منصات التدريب المتخصصة التي تلبي المتطلبات الفريدة لقطاع الصوت والميديا.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-circle-xmark text-rose-400 mt-1"></i>
+                <span>صعوبة تبادل ملفات التكليفات الضخمة (Audio WAVs, 4K Footage) ومراجعتها وتصحيحها.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-circle-xmark text-rose-400 mt-1"></i>
+                <span>تشتت العملية التعليمية بين أدوات البث المباشر، منصات الدفع، وإصدار الشهادات اليدوي.</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Solution Box -->
+          <div class="glass-card p-8 rounded-3xl border border-cyan-500/40 bg-gradient-to-b from-cyan-950/20 to-transparent shadow-xl shadow-cyan-950/40">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-lg border border-cyan-500/30">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <h3 class="text-xl font-bold text-cyan-300">الحل الذكي المتكامل: Zein Hub</h3>
+            </div>
+            <ul class="space-y-4 text-slate-200 text-base">
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-badge-check text-cyan-400 mt-1"></i>
+                <span>بيئة تعليمية مركزية تجمع بين المناهج التفاعلية، الكويزات المشفرة، والجلسات الحية.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-badge-check text-cyan-400 mt-1"></i>
+                <span>رفع وتخزين سحابي فائق السرعة للوسائط المتعددة عبر Supabase Cloud Storage.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-badge-check text-cyan-400 mt-1"></i>
+                <span>احتساب ذكي لمعدلات التقدم وإصدار الشهادات فورياً مع منظومة تحقق عامة.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 3: System Architecture -->
+    <!-- ============================================================== -->
+    <section class="slide" data-title="المعمارية والتقنيات">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-6">
+          <span class="text-xs font-bold tracking-widest text-purple-400 uppercase bg-purple-950/60 px-3 py-1 rounded-full border border-purple-800/40">TECH STACK & ARCHITECTURE</span>
+          <h2 class="text-3xl md:text-4xl font-extrabold text-white mt-2">البنية المعمارية ومنظومة التقنيات</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Backend Box -->
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 relative">
+            <div class="w-10 h-10 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xl mb-4 border border-cyan-500/20">
+              <i class="fa-solid fa-server"></i>
+            </div>
+            <h3 class="text-lg font-bold text-cyan-400 mb-3">الواجهة الخلفية (Backend API)</h3>
+            <div class="space-y-2 text-xs text-slate-300 font-mono">
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">⚡ Node.js 20+ & Express v5</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">🛡️ TypeScript (Strict Type Safety)</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">🍃 MongoDB & Mongoose v9</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">🔒 JWT + httpOnly Secure Cookies</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">📋 Joi Payload Validation Engine</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">📑 Swagger / OpenAPI 3.0 Live Docs</div>
+            </div>
+          </div>
+
+          <!-- Frontend Box -->
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 relative">
+            <div class="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl mb-4 border border-purple-500/20">
+              <i class="fa-solid fa-laptop-code"></i>
+            </div>
+            <h3 class="text-lg font-bold text-purple-400 mb-3">الواجهة الأمامية (Frontend App)</h3>
+            <div class="space-y-2 text-xs text-slate-300 font-mono">
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">⚛️ Next.js 16 (App Router) & React 19</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">🎨 Tailwind CSS v3.4 + Custom UI</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">✨ Framer Motion Smooth Animations</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">📝 React Hook Form + Zod Engine</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">🌍 i18next (Arabic RTL & English LTR)</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">🔔 SweetAlert2 + React Hot Toast</div>
+            </div>
+          </div>
+
+          <!-- Cloud & DevOps Box -->
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 relative">
+            <div class="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl mb-4 border border-amber-500/20">
+              <i class="fa-solid fa-cloud-bolt"></i>
+            </div>
+            <h3 class="text-lg font-bold text-amber-400 mb-3">السحابة والتشغيل (Cloud & Ops)</h3>
+            <div class="space-y-2 text-xs text-slate-300 font-mono">
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">☁️ Supabase Cloud Storage (Audio/Video)</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">📦 Monorepo Root Script (start.js)</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">🧪 10+ Automated Phase Test Suites</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">📮 Postman Complete API Collection</div>
+              <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">🚀 Ready for Vercel / Docker Deploy</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 4: Roles & Access Control -->
+    <!-- ============================================================== -->
+    <section class="slide" data-title="الأدوار والصلاحيات">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-6">
+          <span class="text-xs font-bold tracking-widest text-emerald-400 uppercase bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/40">USER EXPERIENCE & RBAC</span>
+          <h2 class="text-3xl md:text-4xl font-extrabold text-white mt-2">مصفوفة الصلاحيات وتجارب المستخدمين</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Admin -->
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex-shrink-0 flex items-center justify-center text-2xl border border-amber-500/20">
+              <i class="fa-solid fa-crown"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-amber-300 mb-1">لوحة الإدارة (Super Admin / Admin)</h3>
+              <p class="text-sm text-slate-300 leading-relaxed">تحكم كامل بالمسارات والبرامج، مراجعة واعتماد طلبات الالتحاق، تدقيق المراجعات والتقييمات، متابعة التحليلات ومؤشرات الأداء ورسائل الدعم الفني.</p>
+            </div>
+          </div>
+
+          <!-- Instructor -->
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-400 flex-shrink-0 flex items-center justify-center text-2xl border border-cyan-500/20">
+              <i class="fa-solid fa-chalkboard-user"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-cyan-300 mb-1">لوحة المحاضر (Instructor Portal)</h3>
+              <p class="text-sm text-slate-300 leading-relaxed">إدارة البرامج المسندة، إضافة الدروس والوحدات، إنشاء الكويزات، تقييم تسليمات التكليفات العملية ورصد الملاحظات، وجدولة الجلسات الحية وتسجيل الحضور.</p>
+            </div>
+          </div>
+
+          <!-- Student -->
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-400 flex-shrink-0 flex items-center justify-center text-2xl border border-purple-500/20">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-purple-300 mb-1">منصة الطالب (Student Dashboard)</h3>
+              <p class="text-sm text-slate-300 leading-relaxed">تصفح المناهج والدروس الصوتية والمرئية، حل الاختبارات والتصحيح الفوري، رفع ملفات التكليفات، حضور اللقاءات التفاعلية، والحصول على شهادات التخرج.</p>
+            </div>
+          </div>
+
+          <!-- Public / Guest -->
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex-shrink-0 flex items-center justify-center text-2xl border border-emerald-500/20">
+              <i class="fa-solid fa-globe"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-emerald-300 mb-1">الواجهة العامة (Public Portal)</h3>
+              <p class="text-sm text-slate-300 leading-relaxed">تصفح مسارات التدريب، استعراض ملفات المدربين، إرسال استفسارات، والتحقق الفوري من صحة ومصداقية أي شهادة تخرج عبر صفحة التحقق العامة.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 5: 19 Core Modules -->
+    <!-- ============================================================== -->
+    <section class="slide" data-title="الوحدات الـ 19">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-6 text-center">
+          <span class="text-xs font-bold tracking-widest text-cyan-400 uppercase bg-cyan-950/60 px-3 py-1 rounded-full border border-cyan-800/40">19 INTEGRATED MODULES</span>
+          <h2 class="text-3xl md:text-4xl font-extrabold text-white mt-2">الترسانة الوظيفية لمنظومة Zein Hub</h2>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-key text-cyan-400 text-base"></i>
+            <span class="text-xs font-bold">المصادقة و JWT</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-route text-purple-400 text-base"></i>
+            <span class="text-xs font-bold">المسارات Tracks</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-book-open text-amber-400 text-base"></i>
+            <span class="text-xs font-bold">البرامج Programs</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-layer-group text-emerald-400 text-base"></i>
+            <span class="text-xs font-bold">الوحدات Modules</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-video text-rose-400 text-base"></i>
+            <span class="text-xs font-bold">الدروس والوسائط</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-spell-check text-cyan-400 text-base"></i>
+            <span class="text-xs font-bold">الاختبارات Quizzes</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-file-arrow-up text-purple-400 text-base"></i>
+            <span class="text-xs font-bold">التكليفات والواجبات</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-chart-line text-emerald-400 text-base"></i>
+            <span class="text-xs font-bold">التقدم الأكاديمي</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-certificate text-amber-400 text-base"></i>
+            <span class="text-xs font-bold">الشهادات الرقمية</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-headset text-cyan-400 text-base"></i>
+            <span class="text-xs font-bold">الجلسات المباشرة Live</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-clipboard-user text-purple-400 text-base"></i>
+            <span class="text-xs font-bold">سجل الحضور Attendance</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-star text-amber-400 text-base"></i>
+            <span class="text-xs font-bold">المراجعات والتقييمات</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-chart-pie text-emerald-400 text-base"></i>
+            <span class="text-xs font-bold">لوحة التحليلات KPIs</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-envelope text-rose-400 text-base"></i>
+            <span class="text-xs font-bold">رسائل التواصل</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-cloud-arrow-up text-cyan-400 text-base"></i>
+            <span class="text-xs font-bold">الرفع السحابي Storage</span>
+          </div>
+          <div class="glass-card p-3.5 rounded-xl flex items-center gap-3">
+            <i class="fa-solid fa-user-tie text-purple-400 text-base"></i>
+            <span class="text-xs font-bold">ملفات المحاضرين</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 6: Security & Cookies -->
+    <!-- ============================================================== -->
+    <section class="slide" data-title="الأمان والتحصين">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-6">
+          <span class="text-xs font-bold tracking-widest text-cyan-400 uppercase bg-cyan-950/60 px-3 py-1 rounded-full border border-cyan-800/40">FORTIFIED CYBERSECURITY</span>
+          <h2 class="text-3xl md:text-4xl font-extrabold text-white mt-2">منظومة الأمان والتحصين الشامل</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="glass-card p-6 rounded-2xl border border-slate-800">
+            <div class="flex items-center gap-3 mb-3">
+              <i class="fa-solid fa-cookie-bite text-cyan-400 text-xl"></i>
+              <h3 class="text-base font-bold text-white">HttpOnly Cookies & Silent Refresh</h3>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              تخزين التوكنات (`zh_access_token` و `zh_refresh_token`) في كوكيز معزولة مشفرة تمنع تماماً أي وصول من نصوص JavaScript البرمجية للوقاية الصارمة من ثغرات XSS، مع تجديد صامت فوري دون إزعاج المستخدم.
+            </p>
+          </div>
+
+          <div class="glass-card p-6 rounded-2xl border border-slate-800">
+            <div class="flex items-center gap-3 mb-3">
+              <i class="fa-solid fa-filter-circle-xmark text-purple-400 text-xl"></i>
+              <h3 class="text-base font-bold text-white">NoSQL Injection Defense</h3>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              تعقيم كافة المعاملات البرمجية وفحص الحقول باستخدام محرك Joi المتقدم لمنع أي استعلامات تخريبية موجهة لقاعدة بيانات MongoDB مع استخدام فهارس أداء مركبة (Compound Indexing).
+            </p>
+          </div>
+
+          <div class="glass-card p-6 rounded-2xl border border-slate-800">
+            <div class="flex items-center gap-3 mb-3">
+              <i class="fa-solid fa-gauge-high text-amber-400 text-xl"></i>
+              <h3 class="text-base font-bold text-white">Rate Limiting & DDoS Shield</h3>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              تحديد معدل الطلبات عبر express-rate-limit لكل عنوان IP لمنع هجمات التخمين Brute-Force وحماية مسارات المصادقة وتسجيل الدخول الحساسة من الإغراق.
+            </p>
+          </div>
+
+          <div class="glass-card p-6 rounded-2xl border border-slate-800">
+            <div class="flex items-center gap-3 mb-3">
+              <i class="fa-solid fa-file-zipper text-emerald-400 text-xl"></i>
+              <h3 class="text-base font-bold text-white">Compression & HTTP Headers</h3>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              دمج حزمة Helmet لإضافة ترويسات الأمان القياسية عالمياً، مع تفعيل ضغط الاستجابات (Compression Gzip) لتسريع زمن الاستجابة وخفض استهلاك الباندويث.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 7: Live Sessions & Certificates -->
+    <!-- ============================================================== -->
+    <section class="slide" data-title="الجلسات والشهادات">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-6">
+          <span class="text-xs font-bold tracking-widest text-purple-400 uppercase bg-purple-950/60 px-3 py-1 rounded-full border border-purple-800/40">INTERACTIVE LEARNING & CREDENTIALS</span>
+          <h2 class="text-3xl md:text-4xl font-extrabold text-white mt-2">الجلسات التفاعلية والشهادات المعتمدة</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Live Sessions -->
+          <div class="glass-card p-7 rounded-3xl border border-slate-800 flex flex-col justify-between">
+            <div>
+              <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-2xl mb-4 border border-purple-500/30">
+                <i class="fa-solid fa-video"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-3">الجلسات المباشرة والحضور الذكي</h3>
+              <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                جدولة الجلسات الحية عبر منصات البث العالمية (Zoom, Google Meet, Teams) وتنبيه الطلاب، مع سجل حضور وغياب متزامن يدخل في احتساب درجات التقييم النهائي.
+              </p>
+            </div>
+            <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+              <span class="text-slate-400">المنصات المدعومة:</span>
+              <div class="flex items-center gap-3 text-sm text-cyan-400">
+                <span><i class="fa-brands fa-zoom"></i> Zoom</span>
+                <span><i class="fa-brands fa-google"></i> Meet</span>
+                <span><i class="fa-brands fa-microsoft"></i> Teams</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Digital Certificates -->
+          <div class="glass-card p-7 rounded-3xl border border-slate-800 flex flex-col justify-between">
+            <div>
+              <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl mb-4 border border-amber-500/30">
+                <i class="fa-solid fa-award"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-3">الشهادات الرقمية والتحقق الفوري</h3>
+              <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                إصدار آلي للشهادات المعتمدة بأرقام تسلسلية فريدة لا تتكرر، مع صفحة فحص عامة (Public Verification) تتيح لأرباب العمل والجهات الأكاديمية التحقق من صحة الشهادة فورياً.
+              </p>
+            </div>
+            <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+              <span class="text-slate-400">رمز التحقق النموذجي:</span>
+              <span class="font-mono text-amber-400 font-bold tracking-wider">ZH-CERT-9A8B7C</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 8: Analytics & Dashboards -->
+    <!-- ============================================================== -->
+    <section class="slide" data-title="لوحة التحليلات">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-6">
+          <span class="text-xs font-bold tracking-widest text-emerald-400 uppercase bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/40">DATA & DECISION MAKING</span>
+          <h2 class="text-3xl md:text-4xl font-extrabold text-white mt-2">لوحة التحليلات ومؤشرات الأداء القياسية</h2>
+        </div>
+
+        <!-- 4 KPI Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 text-center">
+            <div class="text-3xl font-black text-cyan-400 mb-1">1,250+</div>
+            <div class="text-xs font-bold text-white">إجمالي المشتركين</div>
+            <div class="text-[10px] text-slate-400 mt-1">نمو شهري مستمر</div>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 text-center">
+            <div class="text-3xl font-black text-emerald-400 mb-1">88.4%</div>
+            <div class="text-xs font-bold text-white">نسبة إتمام البرامج</div>
+            <div class="text-[10px] text-slate-400 mt-1">معدل تفاعل ممتاز</div>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 text-center">
+            <div class="text-3xl font-black text-purple-400 mb-1">12+</div>
+            <div class="text-xs font-bold text-white">برنامج تخصصي</div>
+            <div class="text-[10px] text-slate-400 mt-1">في 3 مسارات رئيسية</div>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 text-center">
+            <div class="text-3xl font-black text-amber-400 mb-1">950+</div>
+            <div class="text-xs font-bold text-white">شهادة موثقة</div>
+            <div class="text-[10px] text-slate-400 mt-1">مع رمز تحقق QR</div>
+          </div>
+        </div>
+
+        <!-- Aggregation Engine Note -->
+        <div class="glass-card p-6 rounded-2xl border border-cyan-800/40 bg-gradient-to-r from-cyan-950/20 to-slate-900/60">
+          <div class="flex items-center gap-3 mb-2">
+            <i class="fa-solid fa-microchip text-cyan-400 text-lg"></i>
+            <h4 class="font-bold text-cyan-300">محرك التجميع المتطور (MongoDB Aggregations)</h4>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            تتم معالجة البيانات الإحصائية وحساب متوسطات الأداء وتوزيع شرائح التقدم (متميز، متوسط، يحتاج متابعة) على مستوى قاعدة البيانات مباشرة عبر Aggregation Pipelines، مما يوفر سرعة فائقة واستهلاكاً كفؤاً للذاكرة.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 9: Launch & Quick Start -->
+    <!-- ============================================================== -->
+    <section class="slide" data-title="التشغيل والانطلاق">
+      <div class="max-w-6xl mx-auto w-full text-center flex flex-col items-center">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm font-semibold mb-6">
+          <i class="fa-solid fa-rocket"></i>
+          <span>جاهزية التشغيل والإنتاج الكاملة</span>
+        </div>
+
+        <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6">
+          أمر واحد لتشغيل المنصة بالكامل 🚀
+        </h2>
+
+        <div class="glass-card p-6 rounded-2xl border border-cyan-500/30 max-w-2xl w-full text-left mb-8 shadow-2xl shadow-cyan-950/50">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2 border-b border-slate-800 pb-2">
+            <span class="font-mono">Terminal / PowerShell</span>
+            <span class="text-cyan-400">Node.js Smart Launcher</span>
+          </div>
+          <div class="font-mono text-base md:text-lg text-amber-400 font-bold bg-black/60 p-4 rounded-xl flex items-center justify-between">
+            <span>node scripts/start.js</span>
+            <button onclick="navigator.clipboard.writeText('node scripts/start.js'); alert('تم نسخ أمر التشغيل!')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors">
+              <i class="fa-solid fa-copy"></i> نسخ
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl w-full text-right">
+          <div class="glass-card p-4 rounded-xl border border-slate-800">
+            <div class="text-xs text-cyan-400 font-bold mb-1">الواجهة الأمامية</div>
+            <div class="text-sm font-mono text-slate-200">http://localhost:3000</div>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-slate-800">
+            <div class="text-xs text-purple-400 font-bold mb-1">خادم الـ API</div>
+            <div class="text-sm font-mono text-slate-200">http://localhost:5000</div>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-slate-800">
+            <div class="text-xs text-emerald-400 font-bold mb-1">توثيق Swagger</div>
+            <div class="text-sm font-mono text-slate-200">/api/docs</div>
+          </div>
+        </div>
+
+        <div class="mt-10 text-slate-400 text-sm">
+          ✨ تم إعداد هذا العرض التقديمي لمنظومة <span class="text-white font-bold">Zein Hub</span> — شكراً لكم!
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Interactive Presentation Controls Bar -->
+  <footer class="relative z-30 flex items-center justify-between px-8 py-3.5 border-t border-slate-800/80 bg-darkBg/80 backdrop-blur-md">
+    
+    <!-- Slide Title and Indicator -->
+    <div class="flex items-center gap-3">
+      <span class="text-xs font-mono font-bold px-3 py-1 rounded-lg bg-cyan-950/80 border border-cyan-800/60 text-cyan-400" id="slide-indicator">
+        1 / 9
+      </span>
+      <span class="text-xs font-medium text-slate-400" id="current-slide-title">
+        الافتتاحية
+      </span>
+    </div>
+
+    <!-- Central Navigation Controls -->
+    <div class="flex items-center gap-3">
+      <button onclick="prevSlide()" title="الشريحة السابقة (السهم الأيسر)" class="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 hover:border-cyan-500/50 text-slate-300 hover:text-cyan-400 flex items-center justify-center transition-all shadow-lg active:scale-95">
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+
+      <!-- Thumbnails Progress Dots -->
+      <div id="progress-dots" class="flex items-center gap-1.5 px-3 py-2 bg-slate-900/60 rounded-full border border-slate-800"></div>
+
+      <button onclick="nextSlide()" title="الشريحة التالية (السهم الأيمن أو مسافة)" class="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-indigo-600 text-white flex items-center justify-center transition-all shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 active:scale-95 font-bold">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+    </div>
+
+    <!-- Quick Keyboard Shortcuts Hint -->
+    <div class="hidden md:flex items-center gap-3 text-[11px] text-slate-400 font-mono">
+      <span><kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Space</kbd> التالي</span>
+      <span><kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">F</kbd> ملء الشاشة</span>
+      <span><kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">O</kbd> الفهرس</span>
+    </div>
+  </footer>
+
+  <!-- Slide Overview Drawer Modal (Grid View) -->
+  <div id="overview-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl hidden flex-col p-8 overflow-y-auto">
+    <div class="flex items-center justify-between mb-8 max-w-6xl mx-auto w-full">
+      <div>
+        <h2 class="text-2xl font-bold text-white">فهرس الشرائح (Slide Overview)</h2>
+        <p class="text-xs text-slate-400">انقر على أي شريحة للانتقال الفوري إليها</p>
+      </div>
+      <button onclick="toggleOverview()" class="w-10 h-10 rounded-full bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+    <div id="overview-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto w-full"></div>
+  </div>
+
+  <!-- JavaScript Presentation Engine -->
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    let currentIndex = 0;
+    let autoplayInterval = null;
+    let soundEnabled = true;
+    let laserActive = false;
+
+    // Web Audio API Synthesizer for SFX
+    const audioCtx = (typeof window.AudioContext !== 'undefined' || typeof window.webkitAudioContext !== 'undefined') ? new (window.AudioContext || window.webkitAudioContext)() : null;
+    
+    function playSound(type = 'click') {
+      if (!soundEnabled || !audioCtx) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        if (type === 'next') {
+          osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.1);
+        } else if (type === 'prev') {
+          osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.1);
+        }
+      } catch (e) {}
+    }
+
+    function updateSlideUI() {
+      slides.forEach((slide, idx) => {
+        slide.classList.remove('active', 'prev');
+        if (idx === currentIndex) {
+          slide.classList.add('active');
+        } else if (idx < currentIndex) {
+          slide.classList.add('prev');
+        }
+      });
+
+      // Update Indicators
+      document.getElementById('slide-indicator').textContent = `${currentIndex + 1} / ${slides.length}`;
+      const title = slides[currentIndex].getAttribute('data-title') || `شريحة ${currentIndex + 1}`;
+      document.getElementById('current-slide-title').textContent = title;
+
+      // Update Progress Dots
+      const dotsContainer = document.getElementById('progress-dots');
+      dotsContainer.innerHTML = '';
+      slides.forEach((_, idx) => {
+        const dot = document.createElement('button');
+        dot.className = `w-2 h-2 rounded-full transition-all ${idx === currentIndex ? 'w-6 bg-cyan-400' : 'bg-slate-700 hover:bg-slate-500'}`;
+        dot.onclick = () => goToSlide(idx);
+        dotsContainer.appendChild(dot);
+      });
+    }
+
+    function goToSlide(index) {
+      if (index < 0 || index >= slides.length) return;
+      const soundType = index > currentIndex ? 'next' : 'prev';
+      currentIndex = index;
+      playSound(soundType);
+      updateSlideUI();
+    }
+
+    function nextSlide() {
+      if (currentIndex < slides.length - 1) {
+        goToSlide(currentIndex + 1);
+      } else if (autoplayInterval) {
+        goToSlide(0);
+      }
+    }
+
+    function prevSlide() {
+      if (currentIndex > 0) {
+        goToSlide(currentIndex - 1);
+      }
+    }
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowRight' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullScreen();
+      } else if (e.key.toLowerCase() === 'o' || e.key === 'Escape') {
+        toggleOverview();
+      } else if (e.key.toLowerCase() === 'l') {
+        toggleLaser();
+      }
+    });
+
+    // Touch Gestures (Swipe)
+    let touchStartX = 0;
+    window.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    window.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      if (touchStartX - touchEndX > 50) nextSlide();
+      if (touchEndX - touchStartX > 50) prevSlide();
+    });
+
+    // Fullscreen Toggle
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    // Sound Toggle
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('btn-sound');
+      btn.innerHTML = soundEnabled ? '<i class="fa-solid fa-volume-high text-xs text-cyan-400"></i>' : '<i class="fa-solid fa-volume-xmark text-xs text-slate-500"></i>';
+    }
+
+    // Autoplay Toggle
+    function toggleAutoplay() {
+      const btn = document.getElementById('btn-autoplay');
+      if (autoplayInterval) {
+        clearInterval(autoplayInterval);
+        autoplayInterval = null;
+        btn.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+      } else {
+        autoplayInterval = setInterval(nextSlide, 5000);
+        btn.innerHTML = '<i class="fa-solid fa-pause text-xs text-amber-400"></i>';
+      }
+    }
+
+    // Laser Pointer Mode
+    const laser = document.getElementById('laser-pointer');
+    function toggleLaser() {
+      laserActive = !laserActive;
+      laser.style.display = laserActive ? 'block' : 'none';
+      document.body.style.cursor = laserActive ? 'none' : 'default';
+      const btn = document.getElementById('btn-laser');
+      btn.style.color = laserActive ? '#f43f5e' : '';
+    }
+    window.addEventListener('mousemove', (e) => {
+      if (laserActive) {
+        laser.style.left = `${e.clientX}px`;
+        laser.style.top = `${e.clientY}px`;
+      }
+    });
+
+    // Overview Grid
+    function toggleOverview() {
+      const modal = document.getElementById('overview-modal');
+      const grid = document.getElementById('overview-grid');
+      if (modal.classList.contains('hidden')) {
+        grid.innerHTML = '';
+        slides.forEach((slide, idx) => {
+          const card = document.createElement('div');
+          card.className = `glass-card p-6 rounded-2xl cursor-pointer border ${idx === currentIndex ? 'border-cyan-400 bg-cyan-950/40' : 'border-slate-800'}`;
+          card.innerHTML = `
+            <div class="text-xs text-cyan-400 font-mono mb-2">شريحة ${idx + 1}</div>
+            <h3 class="font-bold text-white text-base">${slide.getAttribute('data-title') || `شريحة ${idx + 1}`}</h3>
+          `;
+          card.onclick = () => {
+            goToSlide(idx);
+            toggleOverview();
+          };
+          grid.appendChild(card);
+        });
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    // Particle Canvas Animation
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = Math.random() * 0.4 - 0.2;
+        this.speedY = Math.random() * 0.4 - 0.2;
+        this.opacity = Math.random() * 0.5 + 0.2;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x > canvas.width) this.x = 0;
+        if (this.x < 0) this.x = canvas.width;
+        if (this.y > canvas.height) this.y = 0;
+        if (this.y < 0) this.y = canvas.height;
+      }
+      draw() {
+        ctx.fillStyle = `rgba(6, 182, 212, ${this.opacity})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 45; i++) {
+      particles.push(new Particle());
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // Init
+    updateSlideUI();
+  </script>
+</body>
+</html>

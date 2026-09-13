@@ -168,7 +168,7 @@ export function ContactFormSection() {
             {/* Direct WhatsApp CTA Button */}
             <div className="pt-2">
               <a
-                href={`https://wa.me/201000000000?text=${whatsappMsg}`}
+                href={`https://wa.me/201117231511?text=${whatsappMsg}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block"
