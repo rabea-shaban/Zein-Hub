@@ -28,7 +28,6 @@ import {
   Edit,
   Award,
   Film,
-  Sparkles,
   AlertCircle,
   FolderGit2,
 } from 'lucide-react';

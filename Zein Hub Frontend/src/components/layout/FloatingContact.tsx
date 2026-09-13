@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, MessageCircle, X, PhoneCall, Clock, Check, Sparkles } from 'lucide-react';
+import { Phone, MessageCircle, X, PhoneCall, Clock, Check } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { SITE_CONFIG } from '@/lib/constants';
 
@@ -67,8 +67,8 @@ export function FloatingContact() {
                 <div>
                   <h4 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
                     <span>{SITE_CONFIG.name}</span>
-                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 text-[9px] font-bold rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 border border-emerald-300/40 dark:border-emerald-800/40">
-                      <Sparkles className="w-2.5 h-2.5" />
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 border border-emerald-300/40 dark:border-emerald-800/40">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                       {isAr ? 'متاحون للرد' : 'Online'}
                     </span>
                   </h4>
